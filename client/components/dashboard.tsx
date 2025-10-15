@@ -1,34 +1,37 @@
-"use client"
+'use client';
 
-import { useState } from "react"
-import { Plus, Sparkles, Zap, Check } from "lucide-react"
-import Calendar from "@/components/calendar"
-import XpBar from "@/components/xp-bar"
-import NpcMotivator from "@/components/npc-motivator"
-import { User, Habit, HabitInstance, CalendarDay } from "@/lib/types"
+import { useState, useEffect } from 'react';
+import { useSession, signOut } from 'next-auth/react';
+import { Plus, Sparkles, Zap, Check, LogOut } from 'lucide-react';
+import Calendar from '@/components/calendar';
+import XpBar from '@/components/xp-bar';
+import NpcMotivator from '@/components/npc-motivator';
+import CreateHabit from '@/components/create-habit';
+import { User, Habit, HabitInstance, CalendarDay } from '@/lib/types';
+import { Button } from '@/components/ui/button';
 
-interface DashboardProps {
-  user?: User
-  todayHabits?: Habit[]
-  todayInstances?: HabitInstance[]
-  calendarData?: CalendarDay[]
-  onCreateHabit: () => void
-  onCompleteHabit?: (habitId: string) => void
-}
-
-export default function Dashboard({ 
-  user,
-  todayHabits = [],
-  todayInstances = [],
-  calendarData = [],
-  onCreateHabit,
-  onCompleteHabit 
-}: DashboardProps) {
+export default function Dashboard() {
+  const { data: session, status } = useSession();
+  const [showCreateHabit, setShowCreateHabit] = useState(false);
+  const [habits, setHabits] = useState<Habit[]>([]);
+  const [todayInstances, setTodayInstances] = useState<HabitInstance[]>([]);
+  const [calendarData, setCalendarData] = useState<CalendarDay[]>([]);
+  
   // Données par défaut pour le développement
-  const userName = user?.name || "Hero"
-  const level = user?.level || 12
-  const currentXp = user?.currentXp || 750
-  const maxXp = 1000 // Calculé basé sur le niveau
+  const userName = session?.user?.name || 'Hero';
+  const level = 12;
+  const currentXp = 750;
+  const maxXp = 1000;
+  const handleCreateHabit = (habitData: any) => {
+    console.log('Nouvelle habitude créée:', habitData);
+    // TODO: Envoyer à l'API
+    setShowCreateHabit(false);
+  };
+
+  const handleCompleteHabit = (habitId: string) => {
+    console.log('Habitude complétée:', habitId);
+    // TODO: Envoyer à l'API
+  };
 
   return (
     <div className="p-6 space-y-6 min-h-screen bg-gradient-to-br from-background to-muted/30">
@@ -38,12 +41,23 @@ export default function Dashboard({
           <h1 className="text-2xl font-bold text-glow">Bonjour {userName}</h1>
           <p className="text-sm text-muted-foreground">Continue ta progression</p>
         </div>
-        <div className="relative">
-          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-secondary glow-blue flex items-center justify-center border-2 border-primary">
-            <Sparkles className="w-8 h-8 text-white" />
-          </div>
-          <div className="absolute -bottom-1 -right-1 bg-accent text-white text-xs font-bold px-2 py-0.5 rounded-full border-2 border-background">
-            {level}
+        <div className="flex items-center gap-4">
+          <Button
+            onClick={() => signOut()}
+            variant="ghost"
+            size="sm"
+            className="text-muted-foreground hover:text-foreground"
+          >
+            <LogOut className="w-4 h-4 mr-2" />
+            Déconnexion
+          </Button>
+          <div className="relative">
+            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-secondary glow-blue flex items-center justify-center border-2 border-primary">
+              <Sparkles className="w-8 h-8 text-white" />
+            </div>
+            <div className="absolute -bottom-1 -right-1 bg-accent text-white text-xs font-bold px-2 py-0.5 rounded-full border-2 border-background">
+              {level}
+            </div>
           </div>
         </div>
       </div>
@@ -70,17 +84,17 @@ export default function Dashboard({
       <div className="space-y-3">
         <h2 className="text-lg font-semibold">Habitudes du jour</h2>
         <div className="space-y-2">
-          {todayHabits.length > 0 ? (
-            todayHabits.map((habit) => {
-              const instance = todayInstances.find(i => i.habitId === habit.id)
+          {habits.length > 0 ? (
+            habits.map((habit) => {
+              const instance = todayInstances.find(i => i.habitId === habit.id);
               return (
                 <HabitCard 
                   key={habit.id}
                   habit={habit}
                   isCompleted={instance?.isCompleted || false}
-                  onComplete={() => onCompleteHabit?.(habit.id)}
+                  onComplete={() => handleCompleteHabit(habit.id)}
                 />
-              )
+              );
             })
           ) : (
             // Données fictives pour le développement
@@ -125,13 +139,21 @@ export default function Dashboard({
 
       {/* Floating Add Button */}
       <button
-        onClick={onCreateHabit}
+        onClick={() => setShowCreateHabit(true)}
         className="fixed bottom-24 right-6 w-14 h-14 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center glow-blue shadow-lg hover:scale-110 transition-transform z-50"
       >
         <Plus className="w-6 h-6 text-white" />
       </button>
+
+      {/* Create Habit Modal */}
+      {showCreateHabit && (
+        <CreateHabit
+          onClose={() => setShowCreateHabit(false)}
+          onSubmit={handleCreateHabit}
+        />
+      )}
     </div>
-  )
+  );
 }
 
 interface HabitCardProps {
