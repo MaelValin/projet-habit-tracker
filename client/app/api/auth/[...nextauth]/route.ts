@@ -1,3 +1,3 @@
-import { handlers } from '@/src/server/auth/config';
+import { handlers } from '@/lib/auth';
 
 export const { GET, POST } = handlers;

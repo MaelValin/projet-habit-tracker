@@ -1,23 +1,42 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { HabitEntryService } from '@/src/server/services/database';
-import { requireAuth } from '@/src/server/middleware/auth';
-import { CreateHabitEntryData } from '@/src/shared/types';
+import { auth } from '@/app/lib/auth';
+import { db } from '@/app/lib/database';
+import { z } from 'zod';
+
+const createEntrySchema = z.object({
+  habitId: z.string().uuid('ID d\'habitude invalide'),
+  completed: z.boolean(),
+  notes: z.string().optional(),
+  value: z.number().optional(),
+});
 
 export async function GET(request: NextRequest) {
   try {
-    const userId = await requireAuth();
-    const { searchParams } = new URL(request.url);
-    const date = searchParams.get('date');
-    
-    if (!date) {
-      return NextResponse.json(
-        { success: false, error: 'Le paramètre date est requis' },
-        { status: 400 }
-      );
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Non autorisé' }, { status: 401 });
     }
-    
-    // Valider le format de date (YYYY-MM-DD)
-    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+
+    const { searchParams } = new URL(request.url);
+    const date = searchParams.get('date') || new Date().toISOString().split('T')[0];
+    const habitId = searchParams.get('habitId');
+
+    let entries;
+    if (habitId) {
+      entries = await db.getHabitEntriesByHabitId(habitId);
+    } else {
+      entries = await db.getHabitEntriesByDate(session.user.id, date);
+    }
+
+    return NextResponse.json({ entries, total: entries.length });
+  } catch (error) {
+    console.error('Erreur lors de la récupération des entrées:', error);
+    return NextResponse.json(
+      { error: 'Erreur interne du serveur' },
+      { status: 500 }
+    );
+  }
+}
     if (!dateRegex.test(date)) {
       return NextResponse.json(
         { success: false, error: 'Format de date invalide (YYYY-MM-DD attendu)' },

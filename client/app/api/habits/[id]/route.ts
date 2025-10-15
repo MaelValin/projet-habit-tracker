@@ -1,7 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { HabitService } from '@/src/server/services/database';
-import { requireAuth } from '@/src/server/middleware/auth';
-import { UpdateHabitData } from '@/src/shared/types';
+import { auth } from '@/app/lib/auth';
+import { db } from '@/app/lib/database';
+import { UpdateHabitForm } from '@/app/lib/habit-definitions';
+import { z } from 'zod';
+
+const updateHabitSchema = z.object({
+  title: z.string().min(1).max(255).optional(),
+  description: z.string().optional(),
+  category: z.enum(['health', 'productivity', 'learning', 'fitness', 'mindfulness', 'other']).optional(),
+  frequency: z.enum(['daily', 'weekly', 'monthly']).optional(),
+  targetCount: z.number().min(1).max(100).optional(),
+  isActive: z.boolean().optional(),
+});
 
 interface RouteParams {
   params: {
@@ -9,43 +19,95 @@ interface RouteParams {
   };
 }
 
+// GET - Récupérer une habitude spécifique
 export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
-    const userId = await requireAuth();
-    const habit = await HabitService.getById(params.id, userId);
-    
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Non autorisé' }, { status: 401 });
+    }
+
+    const habits = await db.getHabitsByUserId(session.user.id);
+    const habit = habits.find(h => h.id === params.id);
+
     if (!habit) {
-      return NextResponse.json(
-        { success: false, error: 'Habitude introuvable' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Habitude non trouvée' }, { status: 404 });
     }
-    
-    return NextResponse.json({
-      success: true,
-      data: habit,
-    });
+
+    return NextResponse.json(habit);
   } catch (error) {
-    console.error('Erreur API GET /habits/[id]:', error);
-    
-    if (error instanceof Error && error.message === 'Authentification requise') {
-      return NextResponse.json(
-        { success: false, error: 'Non autorisé' },
-        { status: 401 }
-      );
-    }
-    
+    console.error('Erreur lors de la récupération de l\'habitude:', error);
     return NextResponse.json(
-      { success: false, error: 'Erreur serveur' },
+      { error: 'Erreur interne du serveur' },
       { status: 500 }
     );
   }
 }
 
-export async function PATCH(request: NextRequest, { params }: RouteParams) {
+// PUT - Mettre à jour une habitude
+export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
-    const userId = await requireAuth();
-    const body: UpdateHabitData = await request.json();
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Non autorisé' }, { status: 401 });
+    }
+
+    const body = await request.json();
+    
+    // Validation des données
+    const validationResult = updateHabitSchema.safeParse(body);
+    if (!validationResult.success) {
+      return NextResponse.json(
+        { error: 'Données invalides', details: validationResult.error.errors },
+        { status: 400 }
+      );
+    }
+
+    // Vérifier que l'habitude appartient à l'utilisateur
+    const habits = await db.getHabitsByUserId(session.user.id);
+    const existingHabit = habits.find(h => h.id === params.id);
+
+    if (!existingHabit) {
+      return NextResponse.json({ error: 'Habitude non trouvée' }, { status: 404 });
+    }
+
+    const updatedHabit = await db.updateHabit(params.id, validationResult.data);
+    return NextResponse.json(updatedHabit);
+  } catch (error) {
+    console.error('Erreur lors de la mise à jour de l\'habitude:', error);
+    return NextResponse.json(
+      { error: 'Erreur interne du serveur' },
+      { status: 500 }
+    );
+  }
+}
+
+// DELETE - Supprimer une habitude
+export async function DELETE(request: NextRequest, { params }: RouteParams) {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Non autorisé' }, { status: 401 });
+    }
+
+    // Vérifier que l'habitude appartient à l'utilisateur
+    const habits = await db.getHabitsByUserId(session.user.id);
+    const existingHabit = habits.find(h => h.id === params.id);
+
+    if (!existingHabit) {
+      return NextResponse.json({ error: 'Habitude non trouvée' }, { status: 404 });
+    }
+
+    await db.deleteHabit(params.id);
+    return NextResponse.json({ message: 'Habitude supprimée avec succès' });
+  } catch (error) {
+    console.error('Erreur lors de la suppression de l\'habitude:', error);
+    return NextResponse.json(
+      { error: 'Erreur interne du serveur' },
+      { status: 500 }
+    );
+  }
+}
     
     // Validation
     if (body.name !== undefined) {
