@@ -1,8 +1,13 @@
 import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
-import bcrypt from 'bcrypt';
 import { z } from 'zod';
-import { db } from './database';
+import * as db from '@/lib/prisma';
+
+// Import dynamique de bcrypt pour éviter les problèmes côté client
+async function verifyPassword(password: string, hashedPassword: string): Promise<boolean> {
+  const bcrypt = await import('bcrypt');
+  return bcrypt.compare(password, hashedPassword);
+}
 
 const signInSchema = z.object({
   email: z.string().email('Email invalide'),
@@ -27,11 +32,11 @@ export const {
           
           const user = await db.getUserByEmail(email);
           
-          if (!user) {
-            throw new Error('Utilisateur non trouvé');
+          if (!user || !user.password) {
+            throw new Error('Utilisateur non trouvé ou mot de passe manquant');
           }
 
-          const passwordMatch = await bcrypt.compare(password, user.password);
+          const passwordMatch = await verifyPassword(password, user.password);
           
           if (!passwordMatch) {
             throw new Error('Mot de passe incorrect');

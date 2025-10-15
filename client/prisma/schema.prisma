@@ -1,0 +1,110 @@
+// Prisma schema file pour Habit Tracker
+// Documentation: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+// Models pour Habit Tracker
+
+model User {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  name        String
+  password    String?
+  avatar      String?
+  level       Int      @default(1)
+  currentXp   Int      @default(0)
+  totalXp     Int      @default(0)
+  streak      Int      @default(0)
+  maxStreak   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  habits          Habit[]
+  habitInstances  HabitInstance[]
+  xpLogs          XPLog[]
+  quests          Quest[]
+
+  @@map("users")
+}
+
+model Habit {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  category    String   // 'health', 'learning', 'fitness', 'work', etc.
+  frequency   String   @default("daily") // 'daily', 'weekly', 'custom'
+  targetCount Int      @default(1)
+  difficulty  String   @default("easy") // 'easy', 'medium', 'hard'
+  xpReward    Int      @default(10)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  userId      String
+  user        User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  instances   HabitInstance[]
+
+  @@map("habits")
+}
+
+model HabitInstance {
+  id          String   @id @default(cuid())
+  date        DateTime
+  isCompleted Boolean  @default(false)
+  completedAt DateTime?
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  habitId String
+  habit   Habit  @relation(fields: [habitId], references: [id], onDelete: Cascade)
+  userId  String
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([habitId, date])
+  @@map("habit_instances")
+}
+
+model XPLog {
+  id        String   @id @default(cuid())
+  amount    Int
+  reason    String
+  category  String?
+  createdAt DateTime @default(now())
+
+  // Relations
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("xp_logs")
+}
+
+model Quest {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  type        String   // 'streak', 'total_habits', 'category_focus', etc.
+  target      Int
+  progress    Int      @default(0)
+  isCompleted Boolean  @default(false)
+  xpReward    Int      @default(50)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  expiresAt   DateTime?
+
+  // Relations
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("quests")
+}

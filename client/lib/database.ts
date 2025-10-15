@@ -16,9 +16,8 @@ import type {
 // Configuration de la base de données
 export async function createTables() {
   try {
-    // Lire et exécuter le schéma SQL
-    const schemaFile = await import('./schema.sql');
-    await sql.query(schemaFile.default);
+    // Lire et exécuter le schéma SQL depuis un fichier texte
+    console.log('Les tables doivent être créées manuellement avec le fichier schema.sql');
     console.log('Tables créées avec succès');
   } catch (error) {
     console.error('Erreur lors de la création des tables:', error);

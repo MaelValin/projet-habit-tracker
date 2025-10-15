@@ -16,22 +16,100 @@ export default function Dashboard() {
   const [habits, setHabits] = useState<Habit[]>([]);
   const [todayInstances, setTodayInstances] = useState<HabitInstance[]>([]);
   const [calendarData, setCalendarData] = useState<CalendarDay[]>([]);
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
   
-  // Données par défaut pour le développement
-  const userName = session?.user?.name || 'Hero';
-  const level = 12;
-  const currentXp = 750;
-  const maxXp = 1000;
-  const handleCreateHabit = (habitData: any) => {
-    console.log('Nouvelle habitude créée:', habitData);
-    // TODO: Envoyer à l'API
-    setShowCreateHabit(false);
+  // Charger les données utilisateur et habitudes
+  useEffect(() => {
+    if (session?.user?.id) {
+      loadUserData();
+      loadHabits();
+    }
+  }, [session]);
+
+  const loadUserData = async () => {
+    try {
+      const response = await fetch('/api/user');
+      if (response.ok) {
+        const data = await response.json();
+        setUser(data.user);
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement du profil:', error);
+    }
   };
 
-  const handleCompleteHabit = (habitId: string) => {
-    console.log('Habitude complétée:', habitId);
-    // TODO: Envoyer à l'API
+  const loadHabits = async () => {
+    try {
+      const response = await fetch('/api/habits');
+      if (response.ok) {
+        const data = await response.json();
+        setHabits(data.habits);
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement des habitudes:', error);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  // Données par défaut pour le développement
+  const userName = user?.name || session?.user?.name || 'Hero';
+  const level = user?.level || 12;
+  const currentXp = user?.currentXp || 750;
+  const maxXp = 1000;
+  const handleCreateHabit = async (habitData: any) => {
+    try {
+      const response = await fetch('/api/habits', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(habitData),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setHabits(prev => [...prev, data.habit]);
+        setShowCreateHabit(false);
+      } else {
+        console.error('Erreur lors de la création de l\'habitude');
+      }
+    } catch (error) {
+      console.error('Erreur:', error);
+    }
+  };
+
+  const handleCompleteHabit = async (habitId: string) => {
+    try {
+      const response = await fetch(`/api/habits/${habitId}`, {
+        method: 'POST',
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Habitude complétée:', data);
+        // Recharger les données
+        loadHabits();
+        loadUserData();
+      } else {
+        console.error('Erreur lors de la complétion de l\'habitude');
+      }
+    } catch (error) {
+      console.error('Erreur:', error);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background to-muted/30 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Chargement...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 space-y-6 min-h-screen bg-gradient-to-br from-background to-muted/30">

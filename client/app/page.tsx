@@ -1,20 +1,18 @@
-"use client"
-
-import { useState } from 'react'
-import Dashboard from '@/components/dashboard'
-import CreateHabit from '@/components/create-habit'
-import { CreateHabitDTO } from '@/lib/types'
-
 import { auth } from '@/app/lib/auth';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
 export default async function HomePage() {
-  const session = await auth();
-
-  if (session) {
-    redirect('/dashboard');
+  try {
+    const session = await auth();
+    
+    if (session) {
+      redirect('/dashboard');
+    }
+  } catch (error) {
+    // Ignorer les erreurs JWT au premier démarrage
+    console.log('Pas de session valide, affichage de la page d\'accueil');
   }
 
   return (

@@ -14,6 +14,12 @@ export interface User {
   updatedAt: Date;
   settings?: UserSettings;
   characterClass?: CharacterClass;
+  password?: string; // Ajouté pour l'authentification
+}
+
+// Type pour l'authentification avec mot de passe obligatoire
+export interface UserWithPassword extends User {
+  password: string;
 }
 
 export interface UserSettings {

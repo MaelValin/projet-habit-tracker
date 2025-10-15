@@ -34,7 +34,6 @@ export default function CreateHabit({ onClose, onSubmit }: CreateHabitProps) {
     { id: "easy", label: "Facile", xp: 10, color: "text-green-400" },
     { id: "medium", label: "Moyen", xp: 20, color: "text-yellow-400" },
     { id: "hard", label: "Difficile", xp: 35, color: "text-orange-400" },
-    { id: "epic", label: "Épique", xp: 50, color: "text-purple-400" }
   ]
 
   const selectedDifficulty = difficulties.find(d => d.id === difficulty) || difficulties[0]
