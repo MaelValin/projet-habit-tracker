@@ -19,10 +19,15 @@ export default function Calendar({
 }: CalendarProps) {
   const [displayMonth, setDisplayMonth] = useState(currentMonth)
 
-  // Mock data si pas de données réelles
-  const completedDays = calendarData.length > 0 
-    ? calendarData.filter(day => day.completionRate > 0).map(day => day.date.getDate())
-    : [1, 2, 3, 5, 7, 8, 10, 12, 14, 15]
+  // Jours où TOUTES les habitudes sont complétées (100%) ET où il y a des habitudes
+  const fullyCompletedDays = calendarData.length > 0 
+    ? calendarData.filter(day => day.completionRate >= 100 && day.habits.length > 0).map(day => day.date.getDate())
+    : [] // Pas de mock data pour éviter la confusion
+
+  // Jours avec des habitudes non complétées (pour les jours rouges)
+  const incompleteHabitDays = calendarData.length > 0 
+    ? calendarData.filter(day => day.completionRate < 100 && day.habits.length > 0).map(day => day.date.getDate())
+    : [] // Suppression du mock data pour éviter la confusion
 
   const monthNames = [
     "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
@@ -56,21 +61,21 @@ export default function Calendar({
   }
 
   return (
-    <div className="bg-card border border-border rounded-lg p-4 hologram-bg">
+    <div className="bg-card border border-border rounded-lg p-4">
       {/* Month Header */}
       <div className="flex items-center justify-between mb-4">
         <button 
           onClick={previousMonth}
-          className="p-1 hover:bg-muted rounded glow-blue transition-all"
+          className="p-1 hover:bg-muted rounded transition-all"
         >
           <ChevronLeft className="w-5 h-5" />
         </button>
-        <h3 className="font-semibold text-glow">
+        <h3 className="font-semibold">
           {monthNames[displayMonth.getMonth()]} {displayMonth.getFullYear()}
         </h3>
         <button 
           onClick={nextMonth}
-          className="p-1 hover:bg-muted rounded glow-blue transition-all"
+          className="p-1 hover:bg-muted rounded transition-all"
         >
           <ChevronRight className="w-5 h-5" />
         </button>
@@ -94,8 +99,13 @@ export default function Calendar({
 
         {/* Days */}
         {daysArray.map((day) => {
-          const isCompleted = completedDays.includes(day)
+          const isFullyCompleted = fullyCompletedDays.includes(day)
+          const hasIncompleteHabits = incompleteHabitDays.includes(day)
           const isToday = isCurrentMonth && day === today.getDate()
+          const dayDate = new Date(displayMonth.getFullYear(), displayMonth.getMonth(), day)
+          const isPastDay = dayDate < today && !isToday
+          const isIncompleteAndPast = isPastDay && hasIncompleteHabits
+          
           const dayData = calendarData.find(d => 
             d.date.getDate() === day && 
             d.date.getMonth() === displayMonth.getMonth()
@@ -106,11 +116,13 @@ export default function Calendar({
               key={day}
               onClick={() => handleDayClick(day)}
               className={`aspect-square rounded-lg flex items-center justify-center text-sm font-medium transition-all hover:scale-105 ${
-                isCompleted
-                  ? "bg-primary/20 text-primary border border-primary glow-blue check-bounce"
-                  : isToday
-                    ? "bg-accent/20 text-accent border border-accent"
-                    : "hover:bg-muted border border-transparent"
+                isFullyCompleted
+                  ? "bg-primary/20 text-primary border border-primary"
+                  : isIncompleteAndPast
+                    ? "bg-red-500/20 text-red-400 border border-red-500/50"
+                    : isToday
+                      ? "bg-accent/20 text-accent border border-accent"
+                      : "hover:bg-muted border border-transparent"
               }`}
               title={dayData ? `${dayData.totalXpEarned} XP - ${Math.round(dayData.completionRate)}% complété` : undefined}
             >
@@ -126,16 +138,12 @@ export default function Calendar({
       {/* Legend */}
       <div className="flex items-center gap-4 mt-4 text-xs">
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded bg-primary/20 border border-primary glow-blue" />
-          <span className="text-muted-foreground">Habitudes complétées</span>
+          <div className="w-4 h-4 rounded bg-primary/20 border border-primary" />
+          <span className="text-muted-foreground">Toutes les habitudes complétées</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded bg-accent/20 border border-accent" />
-          <span className="text-muted-foreground">Aujourd'hui</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-accent" />
-          <span className="text-muted-foreground">XP gagné</span>
+          <div className="w-4 h-4 rounded bg-red-500/20 border border-red-500/50" />
+          <span className="text-muted-foreground">Jour passé non complété</span>
         </div>
       </div>
     </div>

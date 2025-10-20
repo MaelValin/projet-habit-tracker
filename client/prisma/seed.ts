@@ -17,9 +17,9 @@ async function seed() {
         email: 'test@example.com',
         name: 'Utilisateur Test',
         password: hashedPassword,
-        level: 5,
-        currentXp: 250,
-        totalXp: 1250,
+        level: 3,           // Niveau 3 (200-299 XP total)
+        currentXp: 50,      // 50 XP dans le niveau actuel (250 % 100 = 50)
+        totalXp: 250,       // XP total
         streak: 3,
         maxStreak: 7,
       },

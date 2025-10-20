@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { CalendarDay, HabitCategory } from '@/lib/types';
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
@@ -120,15 +121,24 @@ export const completeHabitInstance = async (
   });
 
   // Mettre à jour l'XP utilisateur
-  await prisma.user.update({
+  const updatedUser = await prisma.user.update({
     where: { id: userId },
     data: {
-      currentXp: {
-        increment: habit.xpReward,
-      },
       totalXp: {
         increment: habit.xpReward,
       },
+    },
+  });
+
+  // Calculer et mettre à jour le nouveau niveau et currentXp
+  const newLevel = calculateLevel(updatedUser.totalXp);
+  const newCurrentXp = calculateCurrentXp(updatedUser.totalXp);
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: {
+      level: newLevel,
+      currentXp: newCurrentXp,
     },
   });
 
@@ -173,3 +183,74 @@ function getXpReward(difficulty: string): number {
       return 10;
   }
 }
+
+// Fonction pour calculer le niveau basé sur l'XP total
+export function calculateLevel(totalXp: number): number {
+  return Math.floor(totalXp / 100) + 1;
+}
+
+// Fonction pour calculer l'XP actuel dans le niveau
+export function calculateCurrentXp(totalXp: number): number {
+  return totalXp % 100;
+}
+
+// Fonction pour obtenir les données du calendrier pour un mois donné
+export const getCalendarData = async (userId: string, month: Date): Promise<CalendarDay[]> => {
+  const startOfMonth = new Date(month.getFullYear(), month.getMonth(), 1);
+  const endOfMonth = new Date(month.getFullYear(), month.getMonth() + 1, 0);
+
+  // Obtenir toutes les habitudes de l'utilisateur
+  const userHabits = await getUserHabits(userId);
+  
+  // Obtenir toutes les instances d'habitudes pour le mois
+  const habitInstances = await prisma.habitInstance.findMany({
+    where: {
+      userId: userId,
+      date: {
+        gte: startOfMonth,
+        lte: endOfMonth,
+      },
+    },
+    include: {
+      habit: true,
+    },
+  });
+
+  // Grouper par jour
+  const calendarData: CalendarDay[] = [];
+  const daysInMonth = endOfMonth.getDate();
+
+  for (let day = 1; day <= daysInMonth; day++) {
+    const currentDate = new Date(month.getFullYear(), month.getMonth(), day);
+    const dayInstances = habitInstances.filter(
+      instance => instance.date.getDate() === day
+    );
+
+    // Calculer les habitudes complétées vs total des habitudes pour ce jour
+    const completedHabits = dayInstances.filter(instance => instance.isCompleted);
+    const totalHabitsForDay = dayInstances.length; // Seulement les habitudes qui ont des instances ce jour
+    const completionRate = totalHabitsForDay > 0 
+      ? Math.round((completedHabits.length / totalHabitsForDay) * 100)
+      : 0;
+
+    // Calculer l'XP total gagné ce jour
+    const totalXpEarned = completedHabits.reduce(
+      (sum, instance) => sum + (instance.habit?.xpReward || 0), 
+      0
+    );
+
+    calendarData.push({
+      date: currentDate,
+      habits: dayInstances.map(instance => ({
+        habitId: instance.habitId,
+        habitName: instance.habit?.name || '',
+        isCompleted: instance.isCompleted,
+        category: (instance.habit?.category as HabitCategory) || 'other',
+      })),
+      totalXpEarned,
+      completionRate,
+    });
+  }
+
+  return calendarData;
+};

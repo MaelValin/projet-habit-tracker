@@ -5,7 +5,6 @@ import { useSession, signOut } from 'next-auth/react';
 import { Plus, Sparkles, Zap, Check, LogOut } from 'lucide-react';
 import Calendar from '@/components/calendar';
 import XpBar from '@/components/xp-bar';
-import NpcMotivator from '@/components/npc-motivator';
 import CreateHabit from '@/components/create-habit';
 import { User, Habit, HabitInstance, CalendarDay } from '@/lib/types';
 import { Button } from '@/components/ui/button';
@@ -19,11 +18,17 @@ export default function Dashboard() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   
+  // États pour le modal des habitudes du jour
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [selectedDateInstances, setSelectedDateInstances] = useState<HabitInstance[]>([]);
+  
   // Charger les données utilisateur et habitudes
   useEffect(() => {
     if (session?.user?.id) {
       loadUserData();
       loadHabits();
+      loadCalendarData();
+      loadSelectedDateInstances(new Date()); // Charger les habitudes d'aujourd'hui par défaut
     }
   }, [session]);
 
@@ -53,11 +58,60 @@ export default function Dashboard() {
     }
   };
 
+  const loadCalendarData = async (month?: Date) => {
+    try {
+      const currentMonth = month || new Date();
+      const response = await fetch(
+        `/api/calendar?month=${currentMonth.getMonth()}&year=${currentMonth.getFullYear()}`
+      );
+      if (response.ok) {
+        const data = await response.json();
+        // Convertir les dates string en objets Date
+        const calendarDataWithDates = data.calendarData.map((day: any) => ({
+          ...day,
+          date: new Date(day.date),
+        }));
+        setCalendarData(calendarDataWithDates);
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement du calendrier:', error);
+    }
+  };
+
+  // Fonction pour gérer le clic sur une date
+  const handleDateClick = (date: Date) => {
+    setSelectedDate(date);
+    loadSelectedDateInstances(date);
+  };
+
+  // Charger les instances d'habitudes pour la date sélectionnée
+  const loadSelectedDateInstances = async (date: Date) => {
+    try {
+      const dateStr = date.toISOString().split('T')[0];
+      const response = await fetch(`/api/habits/instances?date=${dateStr}`);
+      if (response.ok) {
+        const data = await response.json();
+        setSelectedDateInstances(data.instances || []);
+      }
+    } catch (error) {
+      console.error('Erreur lors du chargement des instances:', error);
+      setSelectedDateInstances([]);
+    }
+  };
+
+  // Fonction pour gérer la complétion d'une habitude
+  const handleHabitComplete = (habitId: string, date: Date) => {
+    // Recharger les données utilisateur pour mettre à jour l'XP
+    loadUserData();
+    // Recharger les données du calendrier
+    loadCalendarData(date);
+  };
+
   // Données par défaut pour le développement
   const userName = user?.name || session?.user?.name || 'Hero';
-  const level = user?.level || 12;
-  const currentXp = user?.currentXp || 750;
-  const maxXp = 1000;
+  const level = user?.level || 1;
+  const currentXp = user?.currentXp || 0;
+  const totalXp = user?.totalXp || 0;
   const handleCreateHabit = async (habitData: any) => {
     try {
       const response = await fetch('/api/habits', {
@@ -82,16 +136,22 @@ export default function Dashboard() {
 
   const handleCompleteHabit = async (habitId: string) => {
     try {
-      const response = await fetch(`/api/habits/${habitId}`, {
+      const response = await fetch('/api/habits/complete', {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          habitId,
+          date: new Date().toISOString(),
+        }),
       });
 
       if (response.ok) {
-        const data = await response.json();
-        console.log('Habitude complétée:', data);
         // Recharger les données
-        loadHabits();
         loadUserData();
+        loadCalendarData();
+        loadSelectedDateInstances(selectedDate);
       } else {
         console.error('Erreur lors de la complétion de l\'habitude');
       }
@@ -112,7 +172,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="p-6 space-y-6 min-h-screen bg-gradient-to-br from-background to-muted/30">
+    <div className="p-6 pb-24 space-y-6 min-h-screen bg-gradient-to-br from-background to-muted/30">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -141,10 +201,9 @@ export default function Dashboard() {
       </div>
 
       {/* XP Bar */}
-      <XpBar level={level} currentXp={currentXp} maxXp={maxXp} />
+      <XpBar level={level} currentXp={currentXp} totalXp={totalXp} />
 
-      {/* NPC Motivator */}
-      <NpcMotivator />
+      
 
       {/* Calendar */}
       <div className="space-y-3">
@@ -154,23 +213,33 @@ export default function Dashboard() {
         </h2>
         <Calendar 
           calendarData={calendarData}
-          onDateClick={(date) => console.log('Date clicked:', date)}
+          onDateClick={handleDateClick}
+          onMonthChange={(date) => loadCalendarData(date)}
         />
       </div>
 
       {/* Today's Habits */}
       <div className="space-y-3">
-        <h2 className="text-lg font-semibold">Habitudes du jour</h2>
+        <h2 className="text-lg font-semibold">
+          Habitudes du {selectedDate.toLocaleDateString('fr-FR', { 
+            day: 'numeric', 
+            month: 'long',
+            year: selectedDate.getFullYear() !== new Date().getFullYear() ? 'numeric' : undefined
+          })}
+          {selectedDate.toDateString() === new Date().toDateString() && ' (aujourd\'hui)'}
+        </h2>
         <div className="space-y-2">
           {habits.length > 0 ? (
             habits.map((habit) => {
-              const instance = todayInstances.find(i => i.habitId === habit.id);
+              const instance = selectedDateInstances.find(i => i.habitId === habit.id);
+              const isToday = selectedDate.toDateString() === new Date().toDateString();
               return (
                 <HabitCard 
                   key={habit.id}
                   habit={habit}
                   isCompleted={instance?.isCompleted || false}
-                  onComplete={() => handleCompleteHabit(habit.id)}
+                  onComplete={() => isToday ? handleCompleteHabit(habit.id) : null}
+                  canModify={isToday}
                 />
               );
             })
@@ -218,7 +287,7 @@ export default function Dashboard() {
       {/* Floating Add Button */}
       <button
         onClick={() => setShowCreateHabit(true)}
-        className="fixed bottom-24 right-6 w-14 h-14 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center glow-blue shadow-lg hover:scale-110 transition-transform z-50"
+        className="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center glow-blue shadow-lg hover:scale-110 transition-transform z-50"
       >
         <Plus className="w-6 h-6 text-white" />
       </button>
@@ -238,12 +307,19 @@ interface HabitCardProps {
   habit: Pick<Habit, 'id' | 'name' | 'category' | 'xpReward' | 'difficulty'>
   isCompleted: boolean
   onComplete: () => void
+  canModify?: boolean
 }
 
-function HabitCard({ habit, isCompleted, onComplete }: HabitCardProps) {
+function HabitCard({ habit, isCompleted, onComplete, canModify = true }: HabitCardProps) {
   const [localCompleted, setLocalCompleted] = useState(isCompleted)
 
+  // Mettre à jour l'état local quand isCompleted change
+  useEffect(() => {
+    setLocalCompleted(isCompleted)
+  }, [isCompleted])
+
   const handleToggle = () => {
+    if (!canModify) return
     setLocalCompleted(!localCompleted)
     onComplete()
   }
@@ -289,10 +365,13 @@ function HabitCard({ habit, isCompleted, onComplete }: HabitCardProps) {
         </div>
         <button
           onClick={handleToggle}
+          disabled={!canModify}
           className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all ${
             localCompleted 
               ? "bg-primary border-primary glow-blue check-bounce" 
-              : "border-muted-foreground hover:border-primary"
+              : canModify
+                ? "border-muted-foreground hover:border-primary"
+                : "border-muted-foreground/50 cursor-not-allowed"
           }`}
         >
           {localCompleted && <Check className="w-4 h-4 text-white" />}
