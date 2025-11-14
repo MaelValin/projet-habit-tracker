@@ -125,9 +125,40 @@ export default function Dashboard() {
       if (response.ok) {
         const data = await response.json();
         setHabits(prev => [...prev, data.habit]);
+        
+        // Créer des instances selon la fréquence choisie
+        await createInstancesBasedOnFrequency(data.habit.id, habitData.frequency);
+        
         setShowCreateHabit(false);
+        
+        // Recharger les données
+        loadSelectedDateInstances(selectedDate);
+        loadCalendarData();
       } else {
         console.error('Erreur lors de la création de l\'habitude');
+      }
+    } catch (error) {
+      console.error('Erreur:', error);
+    }
+  };
+
+  // Fonction pour créer des instances selon la fréquence
+  const createInstancesBasedOnFrequency = async (habitId: string, frequency: string) => {
+    try {
+      const response = await fetch('/api/habits/instances/frequency', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          habitId,
+          frequency,
+          startDate: selectedDate.toISOString().split('T')[0], // Date sélectionnée comme point de départ
+        }),
+      });
+      
+      if (!response.ok) {
+        console.error('Erreur lors de la création des instances de fréquence');
       }
     } catch (error) {
       console.error('Erreur:', error);
@@ -143,7 +174,7 @@ export default function Dashboard() {
         },
         body: JSON.stringify({
           habitId,
-          date: new Date().toISOString(),
+          date: new Date().toISOString(), // Toujours aujourd'hui pour la completion
         }),
       });
 
@@ -151,7 +182,16 @@ export default function Dashboard() {
         // Recharger les données
         loadUserData();
         loadCalendarData();
-        loadSelectedDateInstances(selectedDate);
+        // Si on était sur aujourd'hui, recharger les instances de la date sélectionnée
+        // Sinon, recharger aujourd'hui car c'est là que la completion a eu lieu
+        const today = new Date();
+        if (selectedDate.toDateString() === today.toDateString()) {
+          loadSelectedDateInstances(selectedDate);
+        } else {
+          // Retourner sur aujourd'hui après la completion
+          setSelectedDate(today);
+          loadSelectedDateInstances(today);
+        }
       } else {
         console.error('Erreur lors de la complétion de l\'habitude');
       }
@@ -180,15 +220,7 @@ export default function Dashboard() {
           <p className="text-sm text-muted-foreground">Continue ta progression</p>
         </div>
         <div className="flex items-center gap-4">
-          <Button
-            onClick={() => signOut()}
-            variant="ghost"
-            size="sm"
-            className="text-muted-foreground hover:text-foreground"
-          >
-            <LogOut className="w-4 h-4 mr-2" />
-            Déconnexion
-          </Button>
+          
           <div className="relative">
             <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-secondary glow-blue flex items-center justify-center border-2 border-primary">
               <Sparkles className="w-8 h-8 text-white" />
@@ -229,57 +261,40 @@ export default function Dashboard() {
           {selectedDate.toDateString() === new Date().toDateString() && ' (aujourd\'hui)'}
         </h2>
         <div className="space-y-2">
-          {habits.length > 0 ? (
-            habits.map((habit) => {
-              const instance = selectedDateInstances.find(i => i.habitId === habit.id);
-              const isToday = selectedDate.toDateString() === new Date().toDateString();
-              return (
-                <HabitCard 
-                  key={habit.id}
-                  habit={habit}
-                  isCompleted={instance?.isCompleted || false}
-                  onComplete={() => isToday ? handleCompleteHabit(habit.id) : null}
-                  canModify={isToday}
-                />
-              );
-            })
+          {selectedDate.toDateString() === new Date().toDateString() ? (
+            // Pour aujourd'hui, montrer toutes les habitudes de l'utilisateur
+            habits.length > 0 ? (
+              habits.map((habit) => {
+                const instance = selectedDateInstances.find(i => i.habitId === habit.id);
+                const isToday = selectedDate.toDateString() === new Date().toDateString();
+                return (
+                  <HabitCard 
+                    key={habit.id}
+                    habit={habit}
+                    isCompleted={instance?.isCompleted || false}
+                    onComplete={() => isToday ? handleCompleteHabit(habit.id) : null}
+                    canModify={isToday}
+                  />
+                );
+              })
+            ) : (
+              <p className="text-muted-foreground">Aucune habitude créée</p>
+            )
           ) : (
-            // Données fictives pour le développement
-            <>
-              <HabitCard 
-                habit={{
-                  id: '1',
-                  name: 'Méditation matinale',
-                  category: 'mindfulness',
-                  xpReward: 50,
-                  difficulty: 'easy'
-                } as Habit}
-                isCompleted={true}
-                onComplete={() => {}}
-              />
-              <HabitCard 
-                habit={{
-                  id: '2',
-                  name: 'Lire 10 pages',
-                  category: 'learning',
-                  xpReward: 30,
-                  difficulty: 'medium'
-                } as Habit}
-                isCompleted={false}
-                onComplete={() => {}}
-              />
-              <HabitCard 
-                habit={{
-                  id: '3',
-                  name: 'Faire 20 pompes',
-                  category: 'fitness',
-                  xpReward: 40,
-                  difficulty: 'medium'
-                } as Habit}
-                isCompleted={false}
-                onComplete={() => {}}
-              />
-            </>
+            // Pour les autres jours, ne montrer que les habitudes qui ont des instances
+            selectedDateInstances.length > 0 ? (
+              selectedDateInstances.map((instance: any) => (
+                <HabitCard 
+                  key={instance.id}
+                  habit={instance.habit}
+                  isCompleted={instance.isCompleted}
+                  onComplete={() => null} // Pas de modification pour les jours passés
+                  canModify={false}
+                />
+              ))
+            ) : (
+              <p className="text-muted-foreground">Aucune habitude pour ce jour</p>
+            )
           )}
         </div>
       </div>

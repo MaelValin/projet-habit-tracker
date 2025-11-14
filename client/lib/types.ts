@@ -110,10 +110,9 @@ export type HabitCategory =
   | 'mindfulness'; // Pleine conscience (méditation, gratitude)
 
 export type HabitFrequency = 
-  | 'daily'       // Tous les jours
-  | 'weekly'      // X fois par semaine
-  | 'monthly'     // X fois par mois
-  | 'custom';     // Fréquence personnalisée
+  | 'daily'       // Tous les jours à partir de la date de création
+  | 'weekly'      // Une fois par semaine, le même jour que la date de création
+  | 'unique';     // Une seule fois, pour la date sélectionnée uniquement
 
 export type HabitDifficulty = 'easy' | 'medium' | 'hard' | 'epic';
 

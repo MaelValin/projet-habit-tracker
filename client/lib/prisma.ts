@@ -86,15 +86,23 @@ export const completeHabitInstance = async (
   date: Date,
   userId: string
 ) => {
+  console.log('completeHabitInstance called with:', { habitId, date: date.toISOString(), userId });
+  
   const habit = await getHabitById(habitId);
   if (!habit) throw new Error('Habitude non trouvée');
+
+  // Normaliser la date à minuit
+  const normalizedDate = new Date(date);
+  normalizedDate.setHours(0, 0, 0, 0);
+  
+  console.log('Normalized date:', normalizedDate.toISOString());
 
   // Upsert l'instance d'habitude
   const instance = await prisma.habitInstance.upsert({
     where: {
       habitId_date: {
         habitId,
-        date: new Date(date.toDateString()), // Normaliser à minuit
+        date: normalizedDate,
       },
     },
     update: {
@@ -104,7 +112,7 @@ export const completeHabitInstance = async (
     create: {
       habitId,
       userId,
-      date: new Date(date.toDateString()),
+      date: normalizedDate,
       isCompleted: true,
       completedAt: new Date(),
     },
@@ -142,6 +150,7 @@ export const completeHabitInstance = async (
     },
   });
 
+  console.log('Instance created/updated:', instance);
   return instance;
 };
 
@@ -229,9 +238,10 @@ export const getCalendarData = async (userId: string, month: Date): Promise<Cale
     // Calculer les habitudes complétées vs total des habitudes pour ce jour
     const completedHabits = dayInstances.filter(instance => instance.isCompleted);
     const totalHabitsForDay = dayInstances.length; // Seulement les habitudes qui ont des instances ce jour
-    const completionRate = totalHabitsForDay > 0 
-      ? Math.round((completedHabits.length / totalHabitsForDay) * 100)
-      : 0;
+
+    // Marquer comme non complété si une seule habitude n'est pas terminée
+    const isFullyCompleted = totalHabitsForDay > 0 && completedHabits.length === totalHabitsForDay;
+    const completionRate = isFullyCompleted ? 100 : 0;
 
     // Calculer l'XP total gagné ce jour
     const totalXpEarned = completedHabits.reduce(

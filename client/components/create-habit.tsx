@@ -74,7 +74,7 @@ export default function CreateHabit({ onClose, onSubmit }: CreateHabitProps) {
         <div className="p-6 space-y-6">
           {/* Habit Name */}
           <div className="space-y-2">
-            <Label htmlFor="habit-name">Nom de l'habitude</Label>
+            <Label htmlFor="habit-name">Nom de l'habitude <span className="text-red-50">*</span></Label>
             <Input
               id="habit-name"
               placeholder="Ex: Méditation matinale"
@@ -98,7 +98,7 @@ export default function CreateHabit({ onClose, onSubmit }: CreateHabitProps) {
 
           {/* Category */}
           <div className="space-y-3">
-            <Label>Catégorie</Label>
+            <Label>Catégorie *</Label>
             <div className="grid grid-cols-2 gap-3">
               {categories.map((category) => (
                 <button
@@ -122,9 +122,9 @@ export default function CreateHabit({ onClose, onSubmit }: CreateHabitProps) {
             <Label>Fréquence</Label>
             <div className="grid grid-cols-3 gap-3">
               {[
-                { id: "daily", label: "Quotidien" },
-                { id: "weekly", label: "Hebdo" },
-                { id: "custom", label: "Personnalisé" },
+                { id: "daily", label: "Quotidien", description: "Chaque jour à partir de la date sélectionnée" },
+                { id: "weekly", label: "Hebdomadaire", description: "Une fois par semaine, le même jour" },
+                { id: "unique", label: "Unique", description: "Seulement pour la date sélectionnée" },
               ].map((freq) => (
                 <button
                   key={freq.id}
@@ -134,30 +134,28 @@ export default function CreateHabit({ onClose, onSubmit }: CreateHabitProps) {
                       ? "border-accent bg-accent/10 text-accent"
                       : "border-border hover:border-accent/50"
                   }`}
+                  title={freq.description}
                 >
                   {freq.label}
                 </button>
               ))}
             </div>
+            {frequency === "daily" && (
+              <p className="text-xs text-muted-foreground">
+                Cette habitude sera ajoutée automatiquement chaque jour à partir de la date sélectionnée
+              </p>
+            )}
+            {frequency === "weekly" && (
+              <p className="text-xs text-muted-foreground">
+                Cette habitude sera ajoutée chaque semaine le même jour que la date sélectionnée
+              </p>
+            )}
+            {frequency === "unique" && (
+              <p className="text-xs text-muted-foreground">
+                Cette habitude ne sera créée que pour la date sélectionnée uniquement
+              </p>
+            )}
           </div>
-
-          {/* Target Count */}
-          {frequency !== 'daily' && (
-            <div className="space-y-2">
-              <Label htmlFor="target-count">
-                Nombre de fois par {frequency === 'weekly' ? 'semaine' : 'période'}
-              </Label>
-              <Input
-                id="target-count"
-                type="number"
-                min="1"
-                max="10"
-                value={targetCount}
-                onChange={(e) => setTargetCount(parseInt(e.target.value) || 1)}
-                className="bg-background border-border"
-              />
-            </div>
-          )}
 
           {/* Difficulty */}
           <div className="space-y-3">
@@ -203,7 +201,7 @@ export default function CreateHabit({ onClose, onSubmit }: CreateHabitProps) {
           <Button
             onClick={handleSubmit}
             disabled={!habitName.trim() || !selectedCategory}
-            className="flex-1 bg-gradient-to-r from-primary to-secondary hover:opacity-90 glow-blue disabled:opacity-50"
+            className="flex-1 bg-primary  hover:opacity-90 glow-blue disabled:opacity-50"
           >
             Créer l'habitude
           </Button>

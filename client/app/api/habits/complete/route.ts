@@ -14,6 +14,8 @@ export async function POST(request: NextRequest) {
     }
 
     const { habitId, date } = await request.json();
+    
+    console.log('API Complete - Data received:', { habitId, date });
 
     if (!habitId || !date) {
       return NextResponse.json(
@@ -25,6 +27,12 @@ export async function POST(request: NextRequest) {
     // Vérifier que c'est bien aujourd'hui
     const today = new Date();
     const requestDate = new Date(date);
+    
+    console.log('API Complete - Dates:', {
+      today: today.toDateString(),
+      requestDate: requestDate.toDateString(),
+      isToday: requestDate.toDateString() === today.toDateString()
+    });
     
     if (requestDate.toDateString() !== today.toDateString()) {
       return NextResponse.json(
