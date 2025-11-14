@@ -337,31 +337,34 @@ export const getCalendarData = async (userId: string, month: Date): Promise<Cale
       instance => instance.date.getDate() === day
     );
 
-    // Calculer les habitudes complétées vs total des habitudes pour ce jour
-    const completedHabits = dayInstances.filter(instance => instance.isCompleted);
-    const totalHabitsForDay = dayInstances.length; // Seulement les habitudes qui ont des instances ce jour
+    // Ne créer une entrée que si ce jour a des instances d'habitudes
+    if (dayInstances.length > 0) {
+      // Calculer les habitudes complétées vs total des habitudes pour ce jour
+      const completedHabits = dayInstances.filter(instance => instance.isCompleted);
+      const totalHabitsForDay = dayInstances.length;
 
-    // Marquer comme non complété si une seule habitude n'est pas terminée
-    const isFullyCompleted = totalHabitsForDay > 0 && completedHabits.length === totalHabitsForDay;
-    const completionRate = isFullyCompleted ? 100 : 0;
+      // Marquer comme non complété si une seule habitude n'est pas terminée
+      const isFullyCompleted = completedHabits.length === totalHabitsForDay;
+      const completionRate = isFullyCompleted ? 100 : 0;
 
-    // Calculer l'XP total gagné ce jour
-    const totalXpEarned = completedHabits.reduce(
-      (sum, instance) => sum + (instance.habit?.xpReward || 0), 
-      0
-    );
+      // Calculer l'XP total gagné ce jour
+      const totalXpEarned = completedHabits.reduce(
+        (sum, instance) => sum + (instance.habit?.xpReward || 0), 
+        0
+      );
 
-    calendarData.push({
-      date: currentDate,
-      habits: dayInstances.map(instance => ({
-        habitId: instance.habitId,
-        habitName: instance.habit?.name || '',
-        isCompleted: instance.isCompleted,
-        category: (instance.habit?.category as HabitCategory) || 'other',
-      })),
-      totalXpEarned,
-      completionRate,
-    });
+      calendarData.push({
+        date: currentDate,
+        habits: dayInstances.map(instance => ({
+          habitId: instance.habitId,
+          habitName: instance.habit?.name || '',
+          isCompleted: instance.isCompleted,
+          category: (instance.habit?.category as HabitCategory) || 'other',
+        })),
+        totalXpEarned,
+        completionRate,
+      });
+    }
   }
 
   return calendarData;

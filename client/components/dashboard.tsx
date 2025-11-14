@@ -224,9 +224,7 @@ export default function Dashboard() {
             <div className="w-16 h-16 rounded-full bg-primary glow-blue flex items-center justify-center border-2 border-primary">
               <Sparkles className="w-8 h-8 text-white" />
             </div>
-            <figcaption className="absolute -bottom-1 -right-1 bg-accent text-white text-xs font-bold px-2 py-0.5 rounded-full border-2 border-background">
-              {level}
-            </figcaption>
+            
           </figure>
           <Button
             variant="ghost"
