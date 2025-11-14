@@ -39,21 +39,6 @@ export default async function HomePage() {
             </Button>
           </Link>
         </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12 max-w-4xl mx-auto">
-          <div className="bg-slate-800/50 backdrop-blur-lg border border-blue-500/20 rounded-xl p-6">
-            <h3 className="text-lg font-semibold text-cyan-400 mb-2">🎮 Gamification</h3>
-            <p className="text-slate-300">Gagne de l'XP et monte de niveau en complétant tes habitudes quotidiennes.</p>
-          </div>
-          <div className="bg-slate-800/50 backdrop-blur-lg border border-blue-500/20 rounded-xl p-6">
-            <h3 className="text-lg font-semibold text-cyan-400 mb-2">📊 Suivi visuel</h3>
-            <p className="text-slate-300">Visualise tes progrès avec un calendrier interactif et des statistiques détaillées.</p>
-          </div>
-          <div className="bg-slate-800/50 backdrop-blur-lg border border-blue-500/20 rounded-xl p-6">
-            <h3 className="text-lg font-semibold text-cyan-400 mb-2">🤖 Motivation IA</h3>
-            <p className="text-slate-300">Un compagnon virtuel t'encourage et te donne des conseils personnalisés.</p>
-          </div>
-        </div>
       </div>
     </div>
   );
