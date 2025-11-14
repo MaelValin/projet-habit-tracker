@@ -84,18 +84,6 @@ export default function CreateHabit({ onClose, onSubmit }: CreateHabitProps) {
             />
           </div>
 
-          {/* Description */}
-          <div className="space-y-2">
-            <Label htmlFor="description">Description (optionnel)</Label>
-            <Input
-              id="description"
-              placeholder="Ex: 10 minutes de méditation chaque matin"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="bg-background border-border"
-            />
-          </div>
-
           {/* Category */}
           <div className="space-y-3">
             <Label>Catégorie *</Label>

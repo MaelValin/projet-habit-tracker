@@ -202,7 +202,7 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-background to-muted/30 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-muted-foreground">Chargement...</p>
@@ -212,7 +212,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="p-6 pb-24 space-y-6 min-h-screen bg-gradient-to-br from-background to-muted/30">
+    <div className="p-6 pb-24 space-y-6 min-h-screen bg-background w-fit">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -222,7 +222,7 @@ export default function Dashboard() {
         <div className="flex items-center gap-4">
           
           <div className="relative">
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-secondary glow-blue flex items-center justify-center border-2 border-primary">
+            <div className="w-16 h-16 rounded-full bg-primary glow-blue flex items-center justify-center border-2 border-primary">
               <Sparkles className="w-8 h-8 text-white" />
             </div>
             <div className="absolute -bottom-1 -right-1 bg-accent text-white text-xs font-bold px-2 py-0.5 rounded-full border-2 border-background">
@@ -302,7 +302,7 @@ export default function Dashboard() {
       {/* Floating Add Button */}
       <button
         onClick={() => setShowCreateHabit(true)}
-        className="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center glow-blue shadow-lg hover:scale-110 transition-transform z-50"
+        className="fixed bottom-6 right-6 w-14 h-14 bg-primary hover:bg-primary/90 rounded-full flex items-center justify-center glow-blue shadow-lg hover:scale-110 transition-transform z-50"
       >
         <Plus className="w-6 h-6 text-white" />
       </button>

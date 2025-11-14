@@ -2,6 +2,12 @@
 
 Une application de suivi d'habitudes avec une interface gaming/hologramme qui transforme vos habitudes quotidiennes en aventure RPG.
 
+## 🌐 Demo en ligne
+
+🚀 **[Essayer l'application sur Vercel](https://projet-habit-tracker.vercel.app/login)**
+
+L'application est déployée et accessible en ligne via le lien ci-dessus.
+
 ## ✨ Fonctionnalités
 
 - **🎯 Système de gamification** : Gagnez de l'XP et montez de niveau

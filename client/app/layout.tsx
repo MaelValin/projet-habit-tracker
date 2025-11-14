@@ -8,7 +8,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fr">
-      <body>
+      <body className="flex justify-center">
         <SessionProvider>
           {children}
         </SessionProvider>

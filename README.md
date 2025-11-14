@@ -7,6 +7,12 @@ Une application web moderne de suivi d'habitudes avec un système de gamificatio
 ![React](https://img.shields.io/badge/React-19.0.0-blue.svg)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)
 
+## 🌐 Demo en ligne
+
+🚀 **[Essayer l'application sur Vercel](https://projet-habit-tracker.vercel.app/login)**
+
+L'application est déployée et accessible en ligne. Créez un compte ou connectez-vous pour découvrir toutes les fonctionnalités !
+
 ## ✨ Fonctionnalités
 
 ### 🎯 Système d'Habitudes

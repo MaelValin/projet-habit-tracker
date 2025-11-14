@@ -29,7 +29,7 @@ export default function XpBar({ level, currentXp, totalXp }: XpBarProps) {
 
       <div className="relative h-3 bg-muted rounded-full overflow-hidden">
         <div
-          className="absolute inset-y-0 left-0 bg-gradient-to-r from-primary to-secondary transition-all duration-500 rounded-full"
+          className="absolute inset-y-0 left-0 bg-primary transition-all duration-500 rounded-full"
           style={{ width: `${percentage}%` }}
         />
       </div>
