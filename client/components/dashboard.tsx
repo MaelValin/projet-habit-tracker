@@ -89,7 +89,12 @@ export default function Dashboard() {
   // Charger les instances d'habitudes pour la date sélectionnée
   const loadSelectedDateInstances = async (date: Date) => {
     try {
-      const dateStr = date.toISOString().split('T')[0];
+      // Créer une date locale sans décalage de fuseau horaire
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const dateStr = `${year}-${month}-${day}`;
+      
       const response = await fetch(`/api/habits/instances?date=${dateStr}`);
       if (response.ok) {
         const data = await response.json();
@@ -169,6 +174,13 @@ export default function Dashboard() {
 
   const handleCompleteHabit = async (habitId: string) => {
     try {
+      // Créer une date locale pour aujourd'hui
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = String(today.getMonth() + 1).padStart(2, '0');
+      const day = String(today.getDate()).padStart(2, '0');
+      const localDate = `${year}-${month}-${day}T${String(today.getHours()).padStart(2, '0')}:${String(today.getMinutes()).padStart(2, '0')}:${String(today.getSeconds()).padStart(2, '0')}.${String(today.getMilliseconds()).padStart(3, '0')}Z`;
+      
       const response = await fetch('/api/habits/complete', {
         method: 'POST',
         headers: {
@@ -176,7 +188,7 @@ export default function Dashboard() {
         },
         body: JSON.stringify({
           habitId,
-          date: new Date().toISOString(), // Toujours aujourd'hui pour la completion
+          date: localDate,
         }),
       });
 
@@ -186,7 +198,6 @@ export default function Dashboard() {
         loadCalendarData();
         // Si on était sur aujourd'hui, recharger les instances de la date sélectionnée
         // Sinon, recharger aujourd'hui car c'est là que la completion a eu lieu
-        const today = new Date();
         if (selectedDate.toDateString() === today.toDateString()) {
           loadSelectedDateInstances(selectedDate);
         } else {
