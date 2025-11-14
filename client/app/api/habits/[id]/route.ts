@@ -5,7 +5,7 @@ import * as db from '@/lib/prisma';
 // POST /api/habits/[id] - Compléter une habitude
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth();
@@ -14,7 +14,8 @@ export async function POST(
       return NextResponse.json({ error: 'Non autorisé' }, { status: 401 });
     }
 
-    const habitId = params.id;
+    const resolvedParams = await params;
+    const habitId = resolvedParams.id;
     const today = new Date();
 
     // Vérifier que l'habitude appartient à l'utilisateur
@@ -40,7 +41,7 @@ export async function POST(
 // DELETE /api/habits/[id] - Supprimer une habitude
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth();
@@ -49,7 +50,8 @@ export async function DELETE(
       return NextResponse.json({ error: 'Non autorisé' }, { status: 401 });
     }
 
-    const habitId = params.id;
+    const resolvedParams = await params;
+    const habitId = resolvedParams.id;
 
     // Vérifier que l'habitude appartient à l'utilisateur
     const habit = await db.getHabitById(habitId);
