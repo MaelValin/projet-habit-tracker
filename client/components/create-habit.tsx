@@ -115,7 +115,7 @@ export default function CreateHabit({ onClose, onSubmit }: CreateHabitProps) {
             <div className="grid grid-cols-3 gap-3" role="radiogroup" aria-labelledby="frequency-legend">
               {[
                 { id: "daily", label: "Quotidien", description: "Chaque jour à partir de la date sélectionnée" },
-                { id: "weekly", label: "Hebdomadaire", description: "Une fois par semaine, le même jour" },
+                { id: "weekly", label: "Hebdo", description: "Une fois par semaine, le même jour" },
                 { id: "unique", label: "Unique", description: "Seulement pour la date sélectionnée" },
               ].map((freq) => (
                 <button

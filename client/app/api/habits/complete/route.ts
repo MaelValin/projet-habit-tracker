@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/app/lib/auth';
-import { completeHabitInstance } from '@/lib/prisma';
+import { toggleHabitInstance } from '@/lib/prisma';
 
 export async function POST(request: NextRequest) {
   try {
@@ -41,18 +41,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const instance = await completeHabitInstance(
+    const { instance, xpChange } = await toggleHabitInstance(
       habitId,
       requestDate,
       session.user.id!
     );
 
     return NextResponse.json({ 
-      message: 'Habitude complétée avec succès',
-      instance 
+      message: instance.isCompleted ? 'Habitude complétée avec succès' : 'Habitude décochée avec succès',
+      instance,
+      xpChange
     });
   } catch (error) {
-    console.error('Erreur lors de la complétion:', error);
+    console.error('Erreur lors du toggle:', error);
     return NextResponse.json(
       { error: 'Erreur interne du serveur' },
       { status: 500 }

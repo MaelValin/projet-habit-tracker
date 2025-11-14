@@ -81,6 +81,108 @@ export const deleteHabit = async (id: string) => {
 };
 
 // Habit Instances
+export const toggleHabitInstance = async (
+  habitId: string,
+  date: Date,
+  userId: string
+) => {
+  console.log('toggleHabitInstance called with:', { habitId, date: date.toISOString(), userId });
+  
+  const habit = await getHabitById(habitId);
+  if (!habit) throw new Error('Habitude non trouvée');
+
+  // Normaliser la date à minuit
+  const normalizedDate = new Date(date);
+  normalizedDate.setHours(0, 0, 0, 0);
+  
+  console.log('Normalized date:', normalizedDate.toISOString());
+
+  // Vérifier si l'instance existe déjà
+  const existingInstance = await prisma.habitInstance.findUnique({
+    where: {
+      habitId_date: {
+        habitId,
+        date: normalizedDate,
+      },
+    },
+  });
+
+  let instance;
+  let xpChange = 0;
+
+  if (existingInstance) {
+    // Toggle l'état existant
+    const newCompletedState = !existingInstance.isCompleted;
+    xpChange = newCompletedState ? habit.xpReward : -habit.xpReward;
+    
+    instance = await prisma.habitInstance.update({
+      where: {
+        habitId_date: {
+          habitId,
+          date: normalizedDate,
+        },
+      },
+      data: {
+        isCompleted: newCompletedState,
+        completedAt: newCompletedState ? new Date() : null,
+      },
+    });
+  } else {
+    // Créer une nouvelle instance complétée
+    xpChange = habit.xpReward;
+    
+    instance = await prisma.habitInstance.create({
+      data: {
+        habitId,
+        userId,
+        date: normalizedDate,
+        isCompleted: true,
+        completedAt: new Date(),
+      },
+    });
+  }
+
+  // Ajouter/soustraire XP seulement s'il y a un changement
+  if (xpChange !== 0) {
+    // Ajouter XP log
+    await prisma.xPLog.create({
+      data: {
+        userId,
+        amount: xpChange,
+        reason: xpChange > 0 
+          ? `Habitude complétée: ${habit.name}` 
+          : `Habitude décochée: ${habit.name}`,
+        category: habit.category,
+      },
+    });
+
+    // Mettre à jour l'XP utilisateur
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        totalXp: {
+          increment: xpChange,
+        },
+      },
+    });
+
+    // Calculer et mettre à jour le nouveau niveau et currentXp
+    const newLevel = calculateLevel(updatedUser.totalXp);
+    const newCurrentXp = calculateCurrentXp(updatedUser.totalXp);
+
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        level: newLevel,
+        currentXp: newCurrentXp,
+      },
+    });
+  }
+
+  console.log('Instance toggled:', instance, 'XP change:', xpChange);
+  return { instance, xpChange };
+};
+
 export const completeHabitInstance = async (
   habitId: string,
   date: Date,
