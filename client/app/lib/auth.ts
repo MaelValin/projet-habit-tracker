@@ -3,10 +3,11 @@ import Credentials from 'next-auth/providers/credentials';
 import { z } from 'zod';
 import * as db from '@/lib/prisma';
 
-// Import dynamique de bcrypt pour éviter les problèmes côté client
+// Import bcryptjs pour la vérification des mots de passe
+import bcryptjs from 'bcryptjs';
+
 async function verifyPassword(password: string, hashedPassword: string): Promise<boolean> {
-  const bcrypt = await import('bcrypt');
-  return bcrypt.compare(password, hashedPassword);
+  return bcryptjs.compare(password, hashedPassword);
 }
 
 const signInSchema = z.object({

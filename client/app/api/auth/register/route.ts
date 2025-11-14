@@ -1,12 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import * as db from '@/lib/prisma';
-
-// Import dynamique de bcrypt
-async function hashPassword(password: string): Promise<string> {
-  const bcrypt = await import('bcrypt');
-  return bcrypt.hash(password, 12);
-}
+import { hashPassword } from '@/app/lib/hash';
 
 const registerSchema = z.object({
   name: z.string().min(2, 'Le nom doit contenir au moins 2 caractères'),
