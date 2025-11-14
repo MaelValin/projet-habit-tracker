@@ -217,8 +217,32 @@ export default function Dashboard() {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Chargement...</p>
+          {/* Loader principal avec effet neon */}
+          <div className="relative mb-6">
+            <div className="w-16 h-16 border-4 border-primary/30 border-t-primary rounded-full animate-spin mx-auto glow-blue" 
+                 style={{filter: 'drop-shadow(0 0 10px #3B82F6) drop-shadow(0 0 20px #1E40AF)'}}></div>
+            
+            {/* Cercles pulsants autour */}
+            <div className="absolute inset-0 w-16 h-16 mx-auto">
+              <div className="w-full h-full border-2 border-primary/20 rounded-full animate-ping"></div>
+            </div>
+            <div className="absolute inset-0 w-16 h-16 mx-auto animation-delay-75">
+              <div className="w-full h-full border-2 border-primary/10 rounded-full animate-ping"></div>
+            </div>
+          </div>
+          
+          {/* Texte avec animation de typing */}
+          <div className="relative">
+            <p className="text-primary font-medium text-lg glow-blue animate-pulse">
+              Chargement du dashboard
+              <span className="animate-bounce inline-block ml-1">.</span>
+              <span className="animate-bounce inline-block ml-0.5 animation-delay-150">.</span>
+              <span className="animate-bounce inline-block ml-0.5 animation-delay-300">.</span>
+            </p>
+            <p className="text-muted-foreground text-sm mt-2 animate-fade-in">
+              Préparation de vos habitudes...
+            </p>
+          </div>
         </div>
       </div>
     );

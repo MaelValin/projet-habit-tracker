@@ -41,8 +41,32 @@ export default function ProfilePage() {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Chargement du profil...</p>
+          {/* Loader principal avec effet neon */}
+          <div className="relative mb-6">
+            <div className="w-16 h-16 border-4 border-primary/30 border-t-primary rounded-full animate-spin mx-auto glow-blue" 
+                 style={{filter: 'drop-shadow(0 0 10px #3B82F6) drop-shadow(0 0 20px #1E40AF)'}}></div>
+            
+            {/* Cercles pulsants autour */}
+            <div className="absolute inset-0 w-16 h-16 mx-auto">
+              <div className="w-full h-full border-2 border-primary/20 rounded-full animate-ping"></div>
+            </div>
+            <div className="absolute inset-0 w-16 h-16 mx-auto animation-delay-75">
+              <div className="w-full h-full border-2 border-primary/10 rounded-full animate-ping"></div>
+            </div>
+          </div>
+          
+          {/* Texte avec animation de typing */}
+          <div className="relative">
+            <p className="text-primary font-medium text-lg glow-blue animate-pulse">
+              Chargement du profil
+              <span className="animate-bounce inline-block ml-1">.</span>
+              <span className="animate-bounce inline-block ml-0.5 animation-delay-150">.</span>
+              <span className="animate-bounce inline-block ml-0.5 animation-delay-300">.</span>
+            </p>
+            <p className="text-muted-foreground text-sm mt-2 animate-fade-in">
+              Récupération de vos données...
+            </p>
+          </div>
         </div>
       </div>
     );
@@ -57,10 +81,14 @@ export default function ProfilePage() {
   const totalCompleted = user?.totalCompleted || 0;
   const totalMissed = user?.totalMissed || 0;
 
-  // Calculs des pourcentages
-  const totalHabits = totalCompleted + totalMissed;
-  const successRate = totalHabits > 0 ? Math.round((totalCompleted / totalHabits) * 100) : 0;
-  const failureRate = totalHabits > 0 ? Math.round((totalMissed / totalHabits) * 100) : 0;
+  // Calculs des cycles de progression (indépendants)
+  // Barre de récompense : progression vers 10 quêtes complétées pour +50 XP
+  const rewardCycleProgress = (totalCompleted % 10) / 10 * 100;
+  const rewardCyclesCompleted = Math.floor(totalCompleted / 10);
+  
+  // Barre de pénalité : progression vers 10 quêtes ratées pour -50 XP
+  const penaltyCycleProgress = (totalMissed % 10) / 10 * 100;
+  const penaltyCyclesTriggered = Math.floor(totalMissed / 10);
 
   // Fonction pour générer les segments de barre
   const generateProgressBar = (percentage: number, color: string, emptyColor: string = 'bg-neutral-700') => {
@@ -85,9 +113,9 @@ export default function ProfilePage() {
   };
 
   return (
-    <main className="min-h-screen bg-background p-6">
+    <main className="min-h-screen w-full md:w-fit bg-background p-4">
       {/* Header */}
-      <header className="flex items-center gap-4 pb-8">
+      <header className="flex w-full items-center gap-4 pb-8">
         <Button
           variant="ghost"
           size="sm"
@@ -100,15 +128,15 @@ export default function ProfilePage() {
         
       </header>
 
-      <section className="max-w-2xl space-y-6 flex flex-col items-center gap-6">
+      <section className="max-w-2xl w-full  flex flex-col items-center gap-6">
         {/* Avatar et infos principales */}
-        <section className="bg-card border border-border rounded-lg p-6 hologram-bg">
+        <section className="bg-card w-full border border-border rounded-lg p-6 hologram-bg">
           <article className="flex items-center gap-6">
             <figure className="w-20 h-20 rounded-full bg-primary  flex items-center justify-center border-2 border-primary" style={{filter: 'drop-shadow(0 0 1px #3B82F6) drop-shadow(0 0 3px #1E40AF)', boxShadow: '0 0 10px #3B82F6, inset 0 0 20px rgba(59, 130, 246, 0.3)'}}>
               <User className="w-10 h-10 text-white" />
             </figure>
             <header className="flex-1">
-              <h2 className="text-xl font-semibold">{userName}</h2>
+              <h3 className="text-xl font-semibold">{userName}</h3>
               <p className="text-sm text-muted-foreground">{userEmail}</p>
               <address className="flex items-center gap-4 pt-2 not-italic">
                 <span className="text-sm bg-primary/20 text-primary px-2 py-1 rounded-full glow-blue">
@@ -122,11 +150,17 @@ export default function ProfilePage() {
           </article>
         </section>
 
+        <section className='flex flex-col gap-6 '>
+
         {/* Statistiques */}
-        <section className="flex justify-center m-0" aria-label="Statistiques des habitudes">
+        <section className="bg-card w-full border border-border rounded-lg p-6 hologram-bg" aria-label="Statistiques des habitudes">
+          <header className="mb-6 text-center">
+            <h2 className="text-lg font-semibold text-primary mb-1">Statistiques globales</h2>
+            <p className="text-sm text-muted-foreground">Vue d'ensemble de toutes vos habitudes depuis le début</p>
+          </header>
           <article className="flex flex-col justify-center items-center">
             <header>
-              <h2 className="text-center text-white/20 text-8xl font-normal font-['Inter']">TOTAL</h2>
+              <h3 className="text-center text-white/20 text-8xl font-normal font-['Inter']">TOTAL</h3>
             </header>
             <dl className="w-56 flex justify-center items-center gap-16 pt-4">
               <div className="w-24 flex flex-col items-center relative justify-between gap-6 h-full">
@@ -150,12 +184,16 @@ export default function ProfilePage() {
         </section>
 
         {/* Barres de progression des performances */}
-        <section className="flex justify-center w-[90%]" aria-label="Performances avant bonus/malus">
+        <section className="bg-card w-full h-fit border border-border rounded-lg p-6 hologram-bg flex flex-col" aria-label="Performances avant bonus/malus">
+          <header className="mb-6 text-center">
+            <h2 className="text-lg font-semibold text-primary mb-1">Système de récompenses</h2>
+            <p className="text-sm text-muted-foreground">Progression vers vos prochains bonus et malus</p>
+          </header>
           <article className="w-full flex flex-col gap-6">
             {/* Barre de réussite (haut) */}
             <div className="flex items-center gap-6 relative">
               <span className="text-blue-400 text-3xl font-normal font-['Inter'] ">
-                {successRate}%
+                {Math.round(rewardCycleProgress)}%
               </span>
               <div className="absolute left-[-1rem]">
               <img 
@@ -167,19 +205,24 @@ export default function ProfilePage() {
               </div>
               <div className="flex-1 flex flex-col gap-2">
                 <div className="flex justify-between items-center">
-                  <span className="text-white text-sm font-normal font-['Inter']">avant récompense</span>
-                  <span className="text-white/40 text-sm font-normal font-['Inter']">100</span>
+                  <span className="text-white text-sm font-normal font-['Inter']">avant récompense (+50 XP)</span>
+                  <span className="text-white/40 text-sm font-normal font-['Inter']">{totalCompleted % 10}/10</span>
                 </div>
                 <div className="flex gap-1 text-blue-400 justify-between">
-                  {generateProgressBar(successRate, 'bg-blue-900')}
+                  {generateProgressBar(rewardCycleProgress, 'bg-blue-900')}
                 </div>
+                {rewardCyclesCompleted > 0 && (
+                  <div className="text-xs text-blue-400/60 text-center">
+                    Récompenses obtenues : {rewardCyclesCompleted} × 50 XP = {rewardCyclesCompleted * 50} XP
+                  </div>
+                )}
               </div>
             </div>
 
             {/* Barre d'échec (bas) */}
             <div className="flex items-center gap-6 relative flex-row-reverse">
               <span className="text-rose-500 text-3xl font-normal font-['Inter'] ">
-                {failureRate}%
+                {Math.round(penaltyCycleProgress)}%
               </span>
               <div className="absolute right-[-1rem]">
               <img 
@@ -190,23 +233,30 @@ export default function ProfilePage() {
               />
               </div>
               <div className="flex-1 flex flex-col gap-2">
-                
                 <div className="flex gap-1 text-rose-500 flex-row-reverse justify-between">
-                  {generateProgressBar(failureRate, 'bg-red-700', 'bg-zinc-800')}
+                  {generateProgressBar(penaltyCycleProgress, 'bg-red-700', 'bg-zinc-800')}
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-white/40 text-sm font-normal font-['Inter']">100</span>
-                  <span className="text-white text-sm font-normal font-['Inter']">avant pénalité</span>
+                  <span className="text-white/40 text-sm font-normal font-['Inter']">{totalMissed % 10}/10</span>
+                  <span className="text-white text-sm font-normal font-['Inter']">avant pénalité (-50 XP)</span>
                 </div>
+                {penaltyCyclesTriggered > 0 && (
+                  <div className="text-xs text-rose-500/60 text-center">
+                    Pénalités subies : {penaltyCyclesTriggered} × 50 XP = -{penaltyCyclesTriggered * 50} XP
+                  </div>
+                )}
               </div>
             </div>
           </article>
         </section>
 
 
+        </section>
+
+
 
         {/* Actions */}
-        <footer className="flex justify-center">
+        <footer className="flex flex-col items-center gap-3">
           <Button
             variant="destructive"
             className="w-full max-w-sm flex items-center gap-2"

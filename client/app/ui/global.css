@@ -203,6 +203,36 @@
 }
 
 /* ==============================================
+   ANIMATIONS POUR LE LOADER
+   ============================================== */
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 1s ease-out forwards;
+}
+
+.animation-delay-75 {
+  animation-delay: 0.075s;
+}
+
+.animation-delay-150 {
+  animation-delay: 0.15s;
+}
+
+.animation-delay-300 {
+  animation-delay: 0.3s;
+}
+
+/* ==============================================
    MEDIA QUERIES POUR LA RESPONSIVITÉ
    ============================================== */
 @media (prefers-reduced-motion: reduce) {
