@@ -4,7 +4,7 @@ import Credentials from 'next-auth/providers/credentials';
 import Google from 'next-auth/providers/google';
 import { z } from 'zod';
 import bcrypt from 'bcrypt';
-import { getUserByEmail, createUser } from './database';
+import { getUserByEmail, createUser } from './prisma';
 
 // Étendre le type User pour inclure passwordHash
 interface ExtendedUser {
@@ -18,7 +18,6 @@ interface ExtendedUser {
 const authConfig: NextAuthConfig = {
   pages: {
     signIn: '/login',
-    signUp: '/register',
   },
   providers: [
     // Google OAuth
@@ -123,7 +122,7 @@ export async function register(email: string, password: string, name: string) {
     const user = await createUser({
       email,
       name,
-      passwordHash,
+      password: passwordHash,
     });
     
     return { success: true, user };
