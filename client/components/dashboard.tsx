@@ -212,33 +212,43 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="p-6 pb-24 space-y-6 min-h-screen bg-background w-fit">
+    <main className="p-6 pb-24 space-y-6 min-h-screen bg-background w-fit">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
+      <header className="flex items-center justify-between">
+        <hgroup>
           <h1 className="text-2xl font-bold text-glow">Bonjour {userName}</h1>
           <p className="text-sm text-muted-foreground">Continue ta progression</p>
-        </div>
-        <div className="flex items-center gap-4">
-          
-          <div className="relative">
+        </hgroup>
+        <nav className="flex items-center gap-4">
+          <figure className="relative">
             <div className="w-16 h-16 rounded-full bg-primary glow-blue flex items-center justify-center border-2 border-primary">
               <Sparkles className="w-8 h-8 text-white" />
             </div>
-            <div className="absolute -bottom-1 -right-1 bg-accent text-white text-xs font-bold px-2 py-0.5 rounded-full border-2 border-background">
+            <figcaption className="absolute -bottom-1 -right-1 bg-accent text-white text-xs font-bold px-2 py-0.5 rounded-full border-2 border-background">
               {level}
-            </div>
-          </div>
-        </div>
-      </div>
+            </figcaption>
+          </figure>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => signOut({ callbackUrl: '/login' })}
+            className="text-muted-foreground hover:text-foreground"
+            aria-label="Se déconnecter"
+          >
+            <LogOut className="w-4 h-4" />
+          </Button>
+        </nav>
+      </header>
 
       {/* XP Bar */}
-      <XpBar level={level} currentXp={currentXp} totalXp={totalXp} />
+      <section aria-label="Progression d'expérience">
+        <XpBar level={level} currentXp={currentXp} totalXp={totalXp} />
+      </section>
 
       
 
       {/* Calendar */}
-      <div className="space-y-3">
+      <section className="space-y-3">
         <h2 className="text-lg font-semibold flex items-center gap-2">
           <Zap className="w-5 h-5 text-accent" />
           Calendrier de progression
@@ -248,10 +258,10 @@ export default function Dashboard() {
           onDateClick={handleDateClick}
           onMonthChange={(date) => loadCalendarData(date)}
         />
-      </div>
+      </section>
 
       {/* Today's Habits */}
-      <div className="space-y-3">
+      <section className="space-y-3">
         <h2 className="text-lg font-semibold">
           Habitudes du {selectedDate.toLocaleDateString('fr-FR', { 
             day: 'numeric', 
@@ -260,7 +270,7 @@ export default function Dashboard() {
           })}
           {selectedDate.toDateString() === new Date().toDateString() && ' (aujourd\'hui)'}
         </h2>
-        <div className="space-y-2">
+        <ul className="space-y-2">
           {selectedDate.toDateString() === new Date().toDateString() ? (
             // Pour aujourd'hui, montrer toutes les habitudes de l'utilisateur
             habits.length > 0 ? (
@@ -296,16 +306,17 @@ export default function Dashboard() {
               <p className="text-muted-foreground">Aucune habitude pour ce jour</p>
             )
           )}
-        </div>
-      </div>
+        </ul>
+      </section>
 
-      {/* Floating Add Button */}
-      <button
+      {/* Add Habit Button */}
+      <Button
         onClick={() => setShowCreateHabit(true)}
         className="fixed bottom-6 right-6 w-14 h-14 bg-primary hover:bg-primary/90 rounded-full flex items-center justify-center glow-blue shadow-lg hover:scale-110 transition-transform z-50"
+        aria-label="Créer une nouvelle habitude"
       >
         <Plus className="w-6 h-6 text-white" />
-      </button>
+      </Button>
 
       {/* Create Habit Modal */}
       {showCreateHabit && (
@@ -314,7 +325,7 @@ export default function Dashboard() {
           onSubmit={handleCreateHabit}
         />
       )}
-    </div>
+    </main>
   );
 }
 
@@ -357,27 +368,27 @@ function HabitCard({ habit, isCompleted, onComplete, canModify = true }: HabitCa
   }
 
   return (
-    <div
+    <article
       className={`bg-card border rounded-lg p-4 transition-all hologram-bg ${
         localCompleted 
           ? "border-primary glow-blue opacity-75" 
           : "border-border hover:border-primary/50"
       }`}
     >
-      <div className="flex items-center justify-between">
-        <div className="flex-1">
+      <header className="flex items-center justify-between">
+        <hgroup className="flex-1">
           <h3 className={`font-medium ${localCompleted ? "line-through text-muted-foreground" : ""}`}>
             {habit.name}
           </h3>
-          <div className="flex items-center gap-2 mt-1">
+          <p className="flex items-center gap-2 mt-1">
             <span className="text-xs text-muted-foreground">
               {categoryLabels[habit.category]}
             </span>
             <span className={`text-xs font-semibold ${difficultyColors[habit.difficulty]}`}>
               +{habit.xpReward} XP
             </span>
-          </div>
-        </div>
+          </p>
+        </hgroup>
         <button
           onClick={handleToggle}
           disabled={!canModify}
@@ -388,10 +399,11 @@ function HabitCard({ habit, isCompleted, onComplete, canModify = true }: HabitCa
                 ? "border-muted-foreground hover:border-primary"
                 : "border-muted-foreground/50 cursor-not-allowed"
           }`}
+          aria-label={`${localCompleted ? 'Marquer comme non terminé' : 'Marquer comme terminé'} : ${habit.name}`}
         >
           {localCompleted && <Check className="w-4 h-4 text-white" />}
         </button>
-      </div>
-    </div>
+      </header>
+    </article>
   )
 }

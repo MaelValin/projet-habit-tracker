@@ -61,12 +61,13 @@ export default function Calendar({
   }
 
   return (
-    <div className="bg-card border border-border rounded-lg p-4">
+    <section className="bg-card border border-border rounded-lg p-4" aria-label="Calendrier des habitudes">
       {/* Month Header */}
-      <div className="flex items-center justify-between mb-4">
+      <header className="flex items-center justify-between mb-4">
         <button 
           onClick={previousMonth}
           className="p-1 hover:bg-muted rounded transition-all"
+          aria-label="Mois précédent"
         >
           <ChevronLeft className="w-5 h-5" />
         </button>
@@ -76,76 +77,89 @@ export default function Calendar({
         <button 
           onClick={nextMonth}
           className="p-1 hover:bg-muted rounded transition-all"
+          aria-label="Mois suivant"
         >
           <ChevronRight className="w-5 h-5" />
         </button>
-      </div>
+      </header>
 
       {/* Days of Week */}
       <div className="grid grid-cols-7 gap-2 mb-2">
         {["L", "M", "M", "J", "V", "S", "D"].map((day, i) => (
           <div key={i} className="text-center text-xs text-muted-foreground font-medium">
-            {day}
+            <abbr title={["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"][i]}>
+              {day}
+            </abbr>
           </div>
         ))}
       </div>
 
       {/* Calendar Grid */}
-      <div className="grid grid-cols-7 gap-2">
-        {/* Empty cells for days before month starts */}
-        {Array.from({ length: startDay }).map((_, i) => (
-          <div key={`empty-${i}`} />
-        ))}
+      <main>
+        <div className="grid grid-cols-7 gap-2" role="grid" aria-label={`Calendrier pour ${monthNames[displayMonth.getMonth()]} ${displayMonth.getFullYear()}`}>
+          {/* Empty cells for days before month starts */}
+          {Array.from({ length: startDay }).map((_, i) => (
+            <div key={`empty-${i}`} aria-hidden="true" />
+          ))}
 
-        {/* Days */}
-        {daysArray.map((day) => {
-          const isFullyCompleted = fullyCompletedDays.includes(day)
-          const hasIncompleteHabits = incompleteHabitDays.includes(day)
-          const isToday = isCurrentMonth && day === today.getDate()
-          const dayDate = new Date(displayMonth.getFullYear(), displayMonth.getMonth(), day)
-          const isPastDay = dayDate < today && !isToday
-          const isIncompleteAndPast = isPastDay && hasIncompleteHabits
-          
-          const dayData = calendarData.find(d => 
-            d.date.getDate() === day && 
-            d.date.getMonth() === displayMonth.getMonth()
-          )
+          {/* Days */}
+          {daysArray.map((day) => {
+            const isFullyCompleted = fullyCompletedDays.includes(day)
+            const hasIncompleteHabits = incompleteHabitDays.includes(day)
+            const isToday = isCurrentMonth && day === today.getDate()
+            const dayDate = new Date(displayMonth.getFullYear(), displayMonth.getMonth(), day)
+            const isPastDay = dayDate < today && !isToday
+            const isIncompleteAndPast = isPastDay && hasIncompleteHabits
+            const formattedDate = dayDate.toLocaleDateString('fr-FR', {
+              weekday: 'long',
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            })
+            
+            const dayData = calendarData.find(d => 
+              d.date.getDate() === day && 
+              d.date.getMonth() === displayMonth.getMonth()
+            )
 
-          return (
-            <button
-              key={day}
-              onClick={() => handleDayClick(day)}
-              className={`aspect-square rounded-lg flex items-center justify-center text-sm font-medium transition-all hover:scale-105 ${
-                isFullyCompleted
-                  ? "bg-primary/20 text-primary border border-primary"
-                  : isIncompleteAndPast
-                    ? "bg-red-500/20 text-red-400 border border-red-500/50"
-                    : isToday
-                      ? "bg-accent/20 text-accent border border-accent"
-                      : "hover:bg-muted border border-transparent"
-              }`}
-              title={dayData ? `${dayData.totalXpEarned} XP - ${Math.round(dayData.completionRate)}% complété` : undefined}
-            >
-              {day}
-              {dayData && dayData.totalXpEarned > 0 && (
-                <div className="absolute bottom-0 right-0 w-2 h-2 bg-accent rounded-full" />
-              )}
-            </button>
-          )
-        })}
-      </div>
+            return (
+              <button
+                key={day}
+                onClick={() => handleDayClick(day)}
+                className={`aspect-square rounded-lg flex items-center justify-center text-sm font-medium transition-all hover:scale-105 relative ${
+                  isFullyCompleted
+                    ? "bg-primary/20 text-primary border border-primary"
+                    : isIncompleteAndPast
+                      ? "bg-red-500/20 text-red-400 border border-red-500/50"
+                      : isToday
+                        ? "bg-accent/20 text-accent border border-accent"
+                        : "hover:bg-muted border border-transparent"
+                }`}
+                role="gridcell"
+                aria-label={`${formattedDate}${dayData ? ` - ${dayData.totalXpEarned} XP, ${Math.round(dayData.completionRate)}% complété` : ''}`}
+                title={dayData ? `${dayData.totalXpEarned} XP - ${Math.round(dayData.completionRate)}% complété` : undefined}
+              >
+                {day}
+                {dayData && dayData.totalXpEarned > 0 && (
+                  <span className="absolute bottom-0 right-0 w-2 h-2 bg-accent rounded-full" aria-hidden="true" />
+                )}
+              </button>
+            )
+          })}
+        </div>
+      </main>
 
       {/* Legend */}
-      <div className="flex items-center gap-4 mt-4 text-xs">
+      <footer className="flex items-center gap-4 mt-4 text-xs" role="group" aria-label="Légende du calendrier">
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded bg-primary/20 border border-primary" />
+          <div className="w-4 h-4 rounded bg-primary/20 border border-primary" aria-hidden="true" />
           <span className="text-muted-foreground">Toutes les habitudes complétées</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded bg-red-500/20 border border-red-500/50" />
+          <div className="w-4 h-4 rounded bg-red-500/20 border border-red-500/50" aria-hidden="true" />
           <span className="text-muted-foreground">Jour passé non complété</span>
         </div>
-      </div>
-    </div>
+      </footer>
+    </section>
   )
 }
