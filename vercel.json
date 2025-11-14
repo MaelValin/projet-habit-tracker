@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "buildCommand": "cd client && pnpm run build",
+  "outputDirectory": "client/.next",
+  "installCommand": "cd client && pnpm install",
+  "devCommand": "cd client && pnpm run dev",
+  "framework": "nextjs",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/client/$1"
+    }
+  ]
+}
