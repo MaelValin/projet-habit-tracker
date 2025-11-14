@@ -274,10 +274,34 @@ export const getUserStats = async (userId: string) => {
     },
   });
 
+  // Total des habitudes complétées dans l'historique
+  const totalCompleted = await prisma.habitInstance.count({
+    where: {
+      userId,
+      isCompleted: true,
+    },
+  });
+
+  // Total des habitudes non complétées (seulement les jours passés)
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // Début de la journée
+
+  const totalMissed = await prisma.habitInstance.count({
+    where: {
+      userId,
+      isCompleted: false,
+      date: {
+        lt: today, // Seulement les dates antérieures à aujourd'hui
+      },
+    },
+  });
+
   return {
     ...user,
     habitCount,
     completedToday,
+    totalCompleted,
+    totalMissed,
   };
 };
 

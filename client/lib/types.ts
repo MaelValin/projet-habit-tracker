@@ -15,6 +15,10 @@ export interface User {
   settings?: UserSettings;
   characterClass?: CharacterClass;
   password?: string; // Ajouté pour l'authentification
+  habitCount?: number; // Nombre d'habitudes actives
+  completedToday?: number; // Habitudes complétées aujourd'hui
+  totalCompleted?: number; // Total des habitudes complétées dans l'historique
+  totalMissed?: number; // Total des habitudes non complétées dans l'historique
 }
 
 // Type pour l'authentification avec mot de passe obligatoire

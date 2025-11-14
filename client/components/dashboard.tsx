@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSession, signOut } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import { Plus, Sparkles, Zap, Check, LogOut } from 'lucide-react';
 import Calendar from '@/components/calendar';
 import XpBar from '@/components/xp-bar';
@@ -11,6 +12,7 @@ import { Button } from '@/components/ui/button';
 
 export default function Dashboard() {
   const { data: session, status } = useSession();
+  const router = useRouter();
   const [showCreateHabit, setShowCreateHabit] = useState(false);
   const [habits, setHabits] = useState<Habit[]>([]);
   const [todayInstances, setTodayInstances] = useState<HabitInstance[]>([]);
@@ -220,21 +222,13 @@ export default function Dashboard() {
           <p className="text-sm text-muted-foreground">Continue ta progression</p>
         </hgroup>
         <nav className="flex items-center gap-4">
-          <figure className="relative">
-            <div className="w-16 h-16 rounded-full bg-primary glow-blue flex items-center justify-center border-2 border-primary">
-              <Sparkles className="w-8 h-8 text-white" />
-            </div>
-            
-          </figure>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => signOut({ callbackUrl: '/login' })}
-            className="text-muted-foreground hover:text-foreground"
-            aria-label="Se déconnecter"
+          <button
+            onClick={() => router.push('/profile')}
+            className="w-16 h-16 rounded-full bg-primary glow-blue flex items-center justify-center border-2 border-primary hover:scale-110 transition-transform"
+            aria-label="Aller au profil"
           >
-            <LogOut className="w-4 h-4" />
-          </Button>
+            <Sparkles className="w-8 h-8 text-white" />
+          </button>
         </nav>
       </header>
 
