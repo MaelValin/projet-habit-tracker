@@ -26,7 +26,6 @@ export default function ProfilePage() {
       const response = await fetch('/api/user');
       if (response.ok) {
         const data = await response.json();
-        // Fusionner les données utilisateur avec les stats
         const userWithStats = { ...data.user, ...data.stats };
         setUser(userWithStats);
       }
@@ -41,12 +40,10 @@ export default function ProfilePage() {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          {/* Loader principal avec effet neon */}
           <div className="relative mb-6">
             <div className="w-16 h-16 border-4 border-primary/30 border-t-primary rounded-full animate-spin mx-auto glow-blue" 
                  style={{filter: 'drop-shadow(0 0 10px #3B82F6) drop-shadow(0 0 20px #1E40AF)'}}></div>
             
-            {/* Cercles pulsants autour */}
             <div className="absolute inset-0 w-16 h-16 mx-auto">
               <div className="w-full h-full border-2 border-primary/20 rounded-full animate-ping"></div>
             </div>
@@ -55,7 +52,6 @@ export default function ProfilePage() {
             </div>
           </div>
           
-          {/* Texte avec animation de typing */}
           <div className="relative">
             <p className="text-primary font-medium text-lg glow-blue animate-pulse">
               Chargement du profil
@@ -81,16 +77,13 @@ export default function ProfilePage() {
   const totalCompleted = user?.totalCompleted || 0;
   const totalMissed = user?.totalMissed || 0;
 
-  // Calculs des cycles de progression (indépendants)
-  // Barre de récompense : progression vers 10 quêtes complétées pour +50 XP
   const rewardCycleProgress = (totalCompleted % 10) / 10 * 100;
   const rewardCyclesCompleted = Math.floor(totalCompleted / 10);
   
-  // Barre de pénalité : progression vers 10 quêtes ratées pour -50 XP
   const penaltyCycleProgress = (totalMissed % 10) / 10 * 100;
   const penaltyCyclesTriggered = Math.floor(totalMissed / 10);
 
-  // Fonction pour générer les segments de barre
+ 
   const generateProgressBar = (percentage: number, color: string, emptyColor: string = 'bg-neutral-700') => {
     const filledSegments = Math.round((percentage / 100) * 14);
     const segments = [];
@@ -130,7 +123,7 @@ export default function ProfilePage() {
 
       <section className="max-w-2xl w-full  flex flex-col items-center gap-6">
         {/* Avatar et infos principales */}
-        <section className="bg-card w-full border border-border rounded-lg p-6 hologram-bg" style={{filter: 'drop-shadow(0 0 2px #3B82F6) drop-shadow(0 0 10px #1E40AF)'}}>
+        <section className="bg-card w-full border border-border rounded-lg p-6 " style={{ boxShadow: '0 0 10px #1E40AF' }}>
           <article className="flex items-center gap-6">
             <figure className="w-20 h-20 rounded-full bg-primary  flex items-center justify-center border-2 border-primary" style={{filter: 'drop-shadow(0 0 1px #3B82F6) drop-shadow(0 0 3px #1E40AF)', boxShadow: '0 0 10px #3B82F6, inset 0 0 20px rgba(59, 130, 246, 0.3)'}}>
               <User className="w-10 h-10 text-white" />
@@ -150,10 +143,10 @@ export default function ProfilePage() {
           </article>
         </section>
 
-        <section className='flex flex-col gap-6 '>
+        <section className='flex flex-col gap-6 w-full'>
 
         {/* Statistiques */}
-        <section className="bg-card w-full border border-border rounded-lg p-6 hologram-bg" style={{filter: 'drop-shadow(0 0 2px #3B82F6) drop-shadow(0 0 10px #1E40AF)'}} aria-label="Statistiques des habitudes">
+        <section className="bg-card w-full border border-border rounded-lg p-6 " style={{ boxShadow: '0 0 10px #1E40AF' }} aria-label="Statistiques des habitudes">
           <header className="mb-6 text-center">
             <h2 className="text-lg font-semibold text-primary mb-1">Statistiques globales</h2>
             <p className="text-sm text-muted-foreground">Vue d'ensemble de toutes vos habitudes depuis le début</p>
@@ -184,7 +177,7 @@ export default function ProfilePage() {
         </section>
 
         {/* Barres de progression des performances */}
-        <section className="bg-card w-full h-fit border border-border rounded-lg p-6 hologram-bg flex flex-col" style={{filter: 'drop-shadow(0 0 2px #3B82F6) drop-shadow(0 0 10px #1E40AF)'}} aria-label="Performances avant bonus/malus">
+        <section className="bg-card w-full h-fit border border-border rounded-lg p-6  flex flex-col" style={{ boxShadow: '0 0 10px #1E40AF' }} aria-label="Performances avant bonus/malus">
           <header className="mb-6 text-center">
             <h2 className="text-lg font-semibold text-primary mb-1">Système de récompenses</h2>
             <p className="text-sm text-muted-foreground">Progression vers vos prochains bonus et malus</p>
@@ -200,7 +193,7 @@ export default function ProfilePage() {
                 src="/rondblue.svg" 
                 alt="Indicateur de réussite" 
                 className="w-20 h-20" 
-                style={{filter: 'drop-shadow(0 0 2px #3B82F6) drop-shadow(0 0 10px #1E40AF)'}} 
+                style={{filter: 'drop-shadow(0 0 2px #3B82F6) ' }} 
               />
               </div>
               <div className="flex-1 flex flex-col gap-2">
@@ -261,7 +254,7 @@ export default function ProfilePage() {
             variant="destructive"
             className="w-full max-w-sm flex items-center gap-2"
             onClick={() => signOut({ callbackUrl: '/login' })}
-            style={{filter: 'drop-shadow(0 0 2px #EF4444) drop-shadow(0 0 10px #DC2626)'}}
+            style={{  boxShadow: '0 0 20px #EF4444',}}
           >
             <LogOut className="w-4 h-4" />
             Déconnexion

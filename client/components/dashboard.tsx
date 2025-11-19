@@ -11,26 +11,50 @@ import { User, Habit, HabitInstance, CalendarDay } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 
 export default function Dashboard() {
+    const [showCreateHabit, setShowCreateHabit] = useState(false);
+
+
+    useEffect(() => {
+      if (showCreateHabit) {
+        document.body.classList.add('overflow-hidden');
+      } else {
+        document.body.classList.remove('overflow-hidden');
+      }
+      return () => {
+        document.body.classList.remove('overflow-hidden');
+      };
+    }, [showCreateHabit]);
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [showCreateHabit, setShowCreateHabit] = useState(false);
+
   const [habits, setHabits] = useState<Habit[]>([]);
   const [todayInstances, setTodayInstances] = useState<HabitInstance[]>([]);
   const [calendarData, setCalendarData] = useState<CalendarDay[]>([]);
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (showCreateHabit) {
+      document.body.classList.add('overflow-hidden');
+    } else {
+      document.body.classList.remove('overflow-hidden');
+    }
+    return () => {
+      document.body.classList.remove('overflow-hidden');
+    };
+  }, [showCreateHabit]);
   
-  // États pour le modal des habitudes du jour
+ 
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedDateInstances, setSelectedDateInstances] = useState<HabitInstance[]>([]);
   
-  // Charger les données utilisateur et habitudes
+ 
   useEffect(() => {
     if (session?.user?.id) {
       loadUserData();
       loadHabits();
       loadCalendarData();
-      loadSelectedDateInstances(new Date()); // Charger les habitudes d'aujourd'hui par défaut
+      loadSelectedDateInstances(new Date()); 
     }
   }, [session]);
 
@@ -68,7 +92,7 @@ export default function Dashboard() {
       );
       if (response.ok) {
         const data = await response.json();
-        // Convertir les dates string en objets Date
+        
         const calendarDataWithDates = data.calendarData.map((day: any) => ({
           ...day,
           date: new Date(day.date),
@@ -80,16 +104,16 @@ export default function Dashboard() {
     }
   };
 
-  // Fonction pour gérer le clic sur une date
+  
   const handleDateClick = (date: Date) => {
     setSelectedDate(date);
     loadSelectedDateInstances(date);
   };
 
-  // Charger les instances d'habitudes pour la date sélectionnée
+  
   const loadSelectedDateInstances = async (date: Date) => {
     try {
-      // Créer une date locale sans décalage de fuseau horaire
+      
       const year = date.getFullYear();
       const month = String(date.getMonth() + 1).padStart(2, '0');
       const day = String(date.getDate()).padStart(2, '0');
@@ -106,15 +130,15 @@ export default function Dashboard() {
     }
   };
 
-  // Fonction pour gérer la complétion d'une habitude
+ 
   const handleHabitComplete = (habitId: string, date: Date) => {
-    // Recharger les données utilisateur pour mettre à jour l'XP
+    
     loadUserData();
-    // Recharger les données du calendrier
+    
     loadCalendarData(date);
   };
 
-  // Données par défaut pour le développement
+  
   const userName = user?.name || session?.user?.name || 'Hero';
   const level = user?.level || 1;
   const currentXp = user?.currentXp || 0;
@@ -133,12 +157,12 @@ export default function Dashboard() {
         const data = await response.json();
         setHabits(prev => [...prev, data.habit]);
         
-        // Créer des instances selon la fréquence choisie
+        
         await createInstancesBasedOnFrequency(data.habit.id, habitData.frequency);
         
         setShowCreateHabit(false);
         
-        // Recharger les données
+        
         loadSelectedDateInstances(selectedDate);
         loadCalendarData();
       } else {
@@ -149,7 +173,7 @@ export default function Dashboard() {
     }
   };
 
-  // Fonction pour créer des instances selon la fréquence
+  
   const createInstancesBasedOnFrequency = async (habitId: string, frequency: string) => {
     try {
       const response = await fetch('/api/habits/instances/frequency', {
@@ -160,7 +184,7 @@ export default function Dashboard() {
         body: JSON.stringify({
           habitId,
           frequency,
-          startDate: selectedDate.toISOString().split('T')[0], // Date sélectionnée comme point de départ
+          startDate: selectedDate.toISOString().split('T')[0], 
         }),
       });
       
@@ -174,7 +198,7 @@ export default function Dashboard() {
 
   const handleCompleteHabit = async (habitId: string) => {
     try {
-      // Créer une date locale pour aujourd'hui
+      
       const today = new Date();
       const year = today.getFullYear();
       const month = String(today.getMonth() + 1).padStart(2, '0');
@@ -193,15 +217,14 @@ export default function Dashboard() {
       });
 
       if (response.ok) {
-        // Recharger les données
+        
         loadUserData();
         loadCalendarData();
-        // Si on était sur aujourd'hui, recharger les instances de la date sélectionnée
-        // Sinon, recharger aujourd'hui car c'est là que la completion a eu lieu
+        
         if (selectedDate.toDateString() === today.toDateString()) {
           loadSelectedDateInstances(selectedDate);
         } else {
-          // Retourner sur aujourd'hui après la completion
+          
           setSelectedDate(today);
           loadSelectedDateInstances(today);
         }
@@ -233,7 +256,7 @@ export default function Dashboard() {
           
           
           <div className="relative">
-            <p className="text-primary font-medium text-lg glow-blue animate-pulse">
+            <p className="text-primary font-medium text-lg animate-pulse">
               Chargement du dashboard
               <span className="animate-bounce inline-block ml-1">.</span>
               <span className="animate-bounce inline-block ml-0.5 animation-delay-150">.</span>
@@ -261,7 +284,7 @@ export default function Dashboard() {
             onClick={() => router.push('/profile')}
             className="w-16 h-16 rounded-full bg-primary glow-blue flex items-center justify-center border-2 border-primary hover:scale-110 transition-transform"
             aria-label="Aller au profil"
-            style={{filter: 'drop-shadow(0 0 2px #3B82F6) drop-shadow(0 0 10px #1E40AF)'}} 
+            style={{filter: 'drop-shadow(0 0 2px #3B82F6)', boxShadow: '0 0 10px #1E40AF'}} 
           >
             <Sparkles className="w-8 h-8 text-white" />
           </button>
@@ -319,14 +342,14 @@ export default function Dashboard() {
               <p className="text-muted-foreground">Aucune habitude créée</p>
             )
           ) : (
-            // Pour les autres jours, ne montrer que les habitudes qui ont des instances
+            
             selectedDateInstances.length > 0 ? (
               selectedDateInstances.map((instance: any) => (
                 <HabitCard 
                   key={instance.id}
                   habit={instance.habit}
                   isCompleted={instance.isCompleted}
-                  onComplete={() => null} // Pas de modification pour les jours passés
+                  onComplete={() => null} 
                   canModify={false}
                 />
               ))
@@ -367,7 +390,7 @@ interface HabitCardProps {
 function HabitCard({ habit, isCompleted, onComplete, canModify = true }: HabitCardProps) {
   const [localCompleted, setLocalCompleted] = useState(isCompleted)
 
-  // Mettre à jour l'état local quand isCompleted change
+  
   useEffect(() => {
     setLocalCompleted(isCompleted)
   }, [isCompleted])
@@ -427,7 +450,7 @@ function HabitCard({ habit, isCompleted, onComplete, canModify = true }: HabitCa
                 ? "border-muted-foreground hover:border-primary"
                 : "border-muted-foreground/50 cursor-not-allowed"
           }`}
-          style={{filter: 'drop-shadow(0 0 2px #3B82F6) drop-shadow(0 0 10px #1E40AF)'}} 
+          style={{filter: 'drop-shadow(0 0 2px #3B82F6) '}} 
           aria-label={`${localCompleted ? 'Marquer comme non terminé' : 'Marquer comme terminé'} : ${habit.name}`}
         >
           {localCompleted && <Check className="w-4 h-4 text-white" />}

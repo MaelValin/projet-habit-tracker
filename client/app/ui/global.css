@@ -23,7 +23,7 @@ layer(base);
   --color-muted-foreground: hsl(var(--muted-foreground));
   --color-accent: hsl(var(--accent));
   --color-accent-foreground: hsl(var(--accent-foreground));
-  --color-destructive: hsl(var(--destructive));
+  --color-destructive: var(--destructive);
   --color-destructive-foreground: hsl(var(--destructive-foreground));
   --color-border: hsl(var(--border));
   --color-input: hsl(var(--input));
@@ -44,14 +44,6 @@ layer(base);
   }
 }
 
-/*
-  The default border color has changed to `currentcolor` in Tailwind CSS v4,
-  so we've added these compatibility styles to make sure everything still
-  looks the same as it did with Tailwind CSS v3.
-
-  If we ever want to remove these styles, we need to add an explicit border
-  color utility to any element that depends on these defaults.
-*/
 @layer base {
   *,
   ::after,
@@ -62,39 +54,29 @@ layer(base);
   }
 }
 
-/* ==============================================
-   STYLES PERSONNALISÉS POUR LE THÈME HOLOGRAMME
-   ============================================== */
 @utility glow-blue {
-  /* Effet de lueur pour le texte simplifié */
 
-  /* Effet de lueur pour les boîtes */
   box-shadow: 0 0 20px var(--glow-color);
 }
 @utility neon-blue {
   filter: 'drop-shadow(0 0 2px #3B82F6) drop-shadow(0 0 10px #1E40AF)';
 }
 @utility border-animate {
-  /* Animation de bordure sans gradient */
   border: 2px solid rgba(59, 130, 246, 0.4);
   animation: borderPulse 2s ease-in-out infinite;
 }
 @utility hologram-bg {
-  /* Arrière-plan hologramme simplifié */
   background: rgba(59, 130, 246, 0.1);
   backdrop-filter: blur(10px);
   border: 1px solid var(--hologram-border);
 }
 @utility check-bounce {
-  /* Animation de rebond pour la validation */
   animation: checkBounce 0.3s ease-out;
 }
 @utility xp-pulse {
-  /* Animation d'impulsion pour l'XP */
   animation: xpPulse 0.6s ease-in-out;
 }
 @utility difficulty-easy {
-  /* Classes utilitaires pour les couleurs de difficulté */
   color: var(--difficulty-easy);
 }
 @utility difficulty-medium {
@@ -107,29 +89,24 @@ layer(base);
   color: var(--difficulty-epic);
 }
 @utility category-color {
-  /* Classe utilitaire pour toutes les catégories */
   color: var(--category-color);
 }
 
 @layer base {
   :root {
-    /* Fonts */
     --font-title: 'Nixie One', cursive;
     --font-family: "Gantari", Arial, Helvetica, sans-serif;
     --font-gantari: 'Gantari', sans-serif;
     --font-geologica: 'Geologica', sans-serif;
 
 
-    /* Couleur principale - Bleu */
     --clr-primary: #3b82f6;
     --clr-primary-hover: #2563eb;
 
-    /* Couleurs d'état */
     --clr-success: #22c55e;
     --clr-warning: #facc15;
     --clr-error: #ef4444;
 
-    /* Couleurs neutres */
     --clr-slate-400: #94a3b8;
     --clr-slate-600: #475569;
     --clr-slate-700: #334155;
@@ -137,75 +114,60 @@ layer(base);
     --clr-slate-900: #0f172a;
     --clr-white: #ffffff;
 
-    /* ==============================================
-       COULEURS THÉMATIQUES - THÈME SOMBRE HOLOGRAMME
-       ============================================== */
-    /* Arrière-plans */
-    --background: 222.2 84% 4.9%;              /* Noir bleuté profond */
-    --background-rgb: 15, 23, 42;              /* slate-900 en RGB */
-    --card: 222.2 84% 4.9%;                    /* Même couleur pour les cartes */
+   
+    --background: 222.2 84% 4.9%;              
+    --background-rgb: 15, 23, 42;              
+    --card: 222.2 84% 4.9%;                    
     --card-rgb: 15, 23, 42;
     --popover: 222.2 84% 4.9%;
-    --muted: 217.2 32.6% 17.5%;                /* slate-800 */
+    --muted: 217.2 32.6% 17.5%;                
     --muted-rgb: 30, 41, 59;
 
-    /* Textes */
-    --foreground: 210 40% 98%;                 /* Blanc cassé */
+    --foreground: 210 40% 98%;                 
     --foreground-rgb: 248, 250, 252;
     --card-foreground: 210 40% 98%;
     --popover-foreground: 210 40% 98%;
-    --muted-foreground: 215 20.2% 65.1%;      /* Gris clair pour textes secondaires */
+    --muted-foreground: 215 20.2% 65.1%;      
     --muted-foreground-rgb: 148, 163, 184;
 
-    /* Couleurs principales du thème */
-    --primary: 217.2 91.2% 59.8%;             /* Blue-500 */
+    --primary: 217.2 91.2% 59.8%;             
     --primary-foreground: 222.2 84% 4.9%;
 
-    /* Couleurs secondaires */
-    --secondary: 217.2 32.6% 17.5%;           /* slate-800 */
+    --secondary: 217.2 32.6% 17.5%;           
     --secondary-rgb: 30, 41, 59;
     --secondary-foreground: 210 40% 98%;
-    --accent: red;              /* Pour les éléments accentués */
+    --accent: red;              
     --accent-rgb: red;
     --accent-foreground: 210 40% 98%;
 
-    /* États et notifications */
-    --destructive: 0 84.2% 60.2%;             /* Rouge */
+    --destructive: rgb(167, 0, 0);             
     --destructive-foreground: 210 40% 98%;
 
-    /* Bordures et inputs */
-    --border: 217.2 32.6% 17.5%;              /* slate-800 */
+   
+    --border: 217.2 32.6% 17.5%;              
     --border-rgb: 30, 41, 59;
     --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 68%;                   /* Blue-400 pour focus */
+    --ring: 224.3 76.3% 68%;                   
     --ring-rgb: 96, 165, 250;
 
-    /* ==============================================
-       COULEURS SPÉCIFIQUES AU HABIT TRACKER
-       ============================================== */
-    /* Couleurs pour les difficultés des habitudes */
+    
     --difficulty-easy: var(--clr-success);
     --difficulty-medium: var(--clr-warning);
     --difficulty-hard: var(--clr-error);
     --difficulty-epic: var(--clr-primary);
 
-    /* Couleur unique pour toutes les catégories */
     --category-color: var(--clr-primary);
 
-    /* Couleurs pour les éléments UI spécifiques */
     --glow-color: rgba(59, 130, 246, 0.3);
     --hologram-border: rgba(59, 130, 246, 0.2);
 
-    /* Couleurs pour les formulaires */
     --input-bg: var(--clr-slate-700);
     --input-border: var(--clr-slate-600);
     --input-focus-border: var(--clr-primary);
 
-    /* Couleurs pour le calendrier */
     --calendar-completed: rgba(59, 130, 246, 0.2);
     --calendar-missed: rgba(239, 68, 68, 0.2);
 
-    /* Variables existantes conservées */
     --radius: 0.5rem;
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
@@ -235,9 +197,6 @@ layer(base);
   }
 }
 
-/* ==============================================
-   ANIMATIONS
-   ============================================== */
 @keyframes borderPulse {
   0% { border-color: rgba(59, 130, 246, 0.2); }
   50% { border-color: rgba(59, 130, 246, 0.6); }
@@ -290,9 +249,6 @@ layer(base);
   animation-delay: 0.3s;
 }
 
-/* ==============================================
-   MEDIA QUERIES POUR LA RESPONSIVITÉ
-   ============================================== */
 @media (prefers-reduced-motion: reduce) {
   .border-animate,
   .check-bounce,
@@ -304,9 +260,6 @@ layer(base);
   }
 }
 
-/* ==============================================
-   CLASSES UTILITAIRES SUPPLÉMENTAIRES
-   ============================================== */
 .simple-bg-primary {
   background-color: var(--clr-primary);
 }
@@ -315,14 +268,12 @@ layer(base);
   background-color: var(--clr-primary-hover);
 }
 
-/* Transitions globales pour les changements de couleurs */
 * {
   transition-property: background-color, border-color, color, box-shadow;
   transition-duration: 0.2s;
   transition-timing-function: ease-in-out;
 }
 
-/* Exception pour les éléments qui ne doivent pas avoir de transition */
 input, textarea, select, [role="button"], button {
   transition-property: background-color, border-color, box-shadow;
 }
