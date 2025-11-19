@@ -19,7 +19,7 @@ export default function XpBar({ level, currentXp, totalXp }: XpBarProps) {
   const percentage = Math.min((xpInCurrentLevel / xpNeededForCurrentLevel) * 100, 100)
 
   return (
-    <section className="bg-card border border-border rounded-lg p-4" aria-label={`Progression du niveau ${level}`}>
+    <section className="bg-card border border-border rounded-lg p-4" style={{filter: 'drop-shadow(0 0 2px #3B82F6) drop-shadow(0 0 10px #1E40AF)'}}  aria-label={`Progression du niveau ${level}`}>
       <header className="flex items-center justify-between mb-2">
         <h3 className="text-sm font-medium">Niveau {level}</h3>
         <span className="text-sm text-muted-foreground" aria-label={`${xpInCurrentLevel} points d'expérience sur ${xpNeededForCurrentLevel} nécessaires`}>

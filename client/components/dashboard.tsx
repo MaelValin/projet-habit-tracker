@@ -217,12 +217,12 @@ export default function Dashboard() {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          {/* Loader principal avec effet neon */}
+          
           <div className="relative mb-6">
             <div className="w-16 h-16 border-4 border-primary/30 border-t-primary rounded-full animate-spin mx-auto glow-blue" 
                  style={{filter: 'drop-shadow(0 0 10px #3B82F6) drop-shadow(0 0 20px #1E40AF)'}}></div>
             
-            {/* Cercles pulsants autour */}
+            
             <div className="absolute inset-0 w-16 h-16 mx-auto">
               <div className="w-full h-full border-2 border-primary/20 rounded-full animate-ping"></div>
             </div>
@@ -231,7 +231,7 @@ export default function Dashboard() {
             </div>
           </div>
           
-          {/* Texte avec animation de typing */}
+          
           <div className="relative">
             <p className="text-primary font-medium text-lg glow-blue animate-pulse">
               Chargement du dashboard
@@ -250,7 +250,7 @@ export default function Dashboard() {
 
   return (
     <main className="p-6 pb-24 space-y-6 min-h-screen bg-background w-fit">
-      {/* Header */}
+      
       <header className="flex items-center justify-between">
         <hgroup>
           <h1 className="text-2xl font-bold text-glow">Bonjour {userName}</h1>
@@ -261,13 +261,14 @@ export default function Dashboard() {
             onClick={() => router.push('/profile')}
             className="w-16 h-16 rounded-full bg-primary glow-blue flex items-center justify-center border-2 border-primary hover:scale-110 transition-transform"
             aria-label="Aller au profil"
+            style={{filter: 'drop-shadow(0 0 2px #3B82F6) drop-shadow(0 0 10px #1E40AF)'}} 
           >
             <Sparkles className="w-8 h-8 text-white" />
           </button>
         </nav>
       </header>
 
-      {/* XP Bar */}
+      
       <section aria-label="Progression d'expérience">
         <XpBar level={level} currentXp={currentXp} totalXp={totalXp} />
       </section>
@@ -426,6 +427,7 @@ function HabitCard({ habit, isCompleted, onComplete, canModify = true }: HabitCa
                 ? "border-muted-foreground hover:border-primary"
                 : "border-muted-foreground/50 cursor-not-allowed"
           }`}
+          style={{filter: 'drop-shadow(0 0 2px #3B82F6) drop-shadow(0 0 10px #1E40AF)'}} 
           aria-label={`${localCompleted ? 'Marquer comme non terminé' : 'Marquer comme terminé'} : ${habit.name}`}
         >
           {localCompleted && <Check className="w-4 h-4 text-white" />}

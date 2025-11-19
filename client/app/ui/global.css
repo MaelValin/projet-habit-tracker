@@ -133,15 +133,19 @@
    ============================================== */
 @layer components {
   /* Effet de lueur pour le texte simplifié */
-  .text-glow {
-    text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
-  }
+  
   
   /* Effet de lueur pour les boîtes */
   .glow-blue {
     box-shadow: 0 0 20px var(--glow-color);
   }
   
+
+  .neon-blue {
+    filter: 'drop-shadow(0 0 2px #3B82F6) drop-shadow(0 0 10px #1E40AF)'
+  }
+
+
   /* Animation de bordure sans gradient */
   .border-animate {
     border: 2px solid rgba(59, 130, 246, 0.4);
@@ -202,9 +206,7 @@
   }
 }
 
-/* ==============================================
-   ANIMATIONS POUR LE LOADER
-   ============================================== */
+
 @keyframes fade-in {
   0% {
     opacity: 0;

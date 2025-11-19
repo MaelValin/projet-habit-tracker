@@ -89,9 +89,9 @@ export default function DayHabitsModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="day-habits-title">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"  role="dialog" aria-modal="true" aria-labelledby="day-habits-title">
       <article className="bg-card border border-border rounded-lg max-w-md w-full max-h-[80vh] overflow-hidden">
-        {/* Header */}
+        
         <header className="flex items-center justify-between p-4 border-b border-border">
           <h2 id="day-habits-title" className="font-semibold flex items-center gap-2">
             <Calendar className="w-5 h-5 text-accent" />
@@ -102,7 +102,7 @@ export default function DayHabitsModal({
           </Button>
         </header>
 
-        {/* Date */}
+        
         <section className="p-4 bg-muted/20">
           <time className="text-sm text-muted-foreground capitalize" dateTime={selectedDate.toISOString().split('T')[0]}>
             {formatDate(selectedDate)}

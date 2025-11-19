@@ -61,8 +61,8 @@ export default function Calendar({
   }
 
   return (
-    <section className="bg-card border border-border rounded-lg p-4" aria-label="Calendrier des habitudes">
-      {/* Month Header */}
+    <section className="bg-card border border-border rounded-lg p-4" style={{filter: 'drop-shadow(0 0 2px #3B82F6) drop-shadow(0 0 10px #1E40AF)'}}  aria-label="Calendrier des habitudes">
+      
       <header className="flex items-center justify-between mb-4">
         <button 
           onClick={previousMonth}
@@ -83,7 +83,7 @@ export default function Calendar({
         </button>
       </header>
 
-      {/* Days of Week */}
+      
       <div className="grid grid-cols-7 gap-2 mb-2">
         {["L", "M", "M", "J", "V", "S", "D"].map((day, i) => (
           <div key={i} className="text-center text-xs text-muted-foreground font-medium">
@@ -94,7 +94,7 @@ export default function Calendar({
         ))}
       </div>
 
-      {/* Calendar Grid */}
+      
       <main>
         <div className="grid grid-cols-7 gap-2" role="grid" aria-label={`Calendrier pour ${monthNames[displayMonth.getMonth()]} ${displayMonth.getFullYear()}`}>
           {/* Empty cells for days before month starts */}
@@ -102,7 +102,7 @@ export default function Calendar({
             <div key={`empty-${i}`} aria-hidden="true" />
           ))}
 
-          {/* Days */}
+          
           {daysArray.map((day) => {
             const isFullyCompleted = fullyCompletedDays.includes(day)
             const hasIncompleteHabits = incompleteHabitDays.includes(day)
