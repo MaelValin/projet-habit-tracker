@@ -89,7 +89,7 @@ export default function DayHabitsModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"  role="dialog" aria-modal="true" aria-labelledby="day-habits-title">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-xs z-50 flex items-center justify-center p-4"  role="dialog" aria-modal="true" aria-labelledby="day-habits-title">
       <article className="bg-card border border-border rounded-lg max-w-md w-full max-h-[80vh] overflow-hidden">
         
         <header className="flex items-center justify-between p-4 border-b border-border">

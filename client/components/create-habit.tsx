@@ -57,7 +57,7 @@ export default function CreateHabit({ onClose, onSubmit }: CreateHabitProps) {
   }
 
   return (
-    <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="create-habit-title">
+    <div className="fixed inset-0 bg-background/80 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="create-habit-title">
       <form className="bg-card border border-primary/30 rounded-t-2xl sm:rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto border-animate hologram-bg">
         {/* Header */}
         <header className="sticky top-0 bg-card border-b border-border p-4 flex items-center justify-between">

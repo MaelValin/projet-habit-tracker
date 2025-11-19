@@ -166,7 +166,7 @@ export default function ProfilePage() {
               <div className="w-24 flex flex-col items-center relative justify-between gap-6 h-full">
                 <dt className="sr-only">Habitudes complétées</dt>
                 <dd className="text-blue-400 text-6xl font-normal font-['Inter'] pb-4">{totalCompleted}</dd>
-                <figure className="absolute top-[-2.25rem] w-32 h-32">
+                <figure className="absolute -top-9 w-32 h-32">
                   <img src="/rondblue.svg" alt="Graphique circulaire bleu" className="w-32 h-32  drop-shadow-2xl" style={{filter: 'drop-shadow(0 0 2px #3B82F6) drop-shadow(0 0 20px #1E40AF)'}} />
                 </figure>
                 <span className="text-white text-lg font-normal font-['Inter'] text-center">Terminées</span>
@@ -174,7 +174,7 @@ export default function ProfilePage() {
               <div className="w-24 flex flex-col items-center relative justify-between gap-6 h-full">
                 <dt className="sr-only">Habitudes non complétées</dt>
                 <dd className="text-rose-500 text-6xl font-normal font-['Inter'] pb-4">{totalMissed}</dd>
-                <figure className="absolute top-[-2.25rem] w-32 h-32">
+                <figure className="absolute -top-9 w-32 h-32">
                   <img src="/rondred.svg" alt="Graphique circulaire rouge" className="w-32 h-32  drop-shadow-2xl" style={{filter: 'drop-shadow(0 0 2px #EF4444) drop-shadow(0 0 20px #DC2626)'}} />
                 </figure>
                 <span className="text-white text-lg font-normal font-['Inter'] text-center">Oubliées</span>
@@ -195,7 +195,7 @@ export default function ProfilePage() {
               <span className="text-blue-400 text-3xl font-normal font-['Inter'] ">
                 {Math.round(rewardCycleProgress)}%
               </span>
-              <div className="absolute left-[-1rem]">
+              <div className="absolute -left-4">
               <img 
                 src="/rondblue.svg" 
                 alt="Indicateur de réussite" 
@@ -224,7 +224,7 @@ export default function ProfilePage() {
               <span className="text-rose-500 text-3xl font-normal font-['Inter'] ">
                 {Math.round(penaltyCycleProgress)}%
               </span>
-              <div className="absolute right-[-1rem]">
+              <div className="absolute -right-4">
               <img 
                 src="/rondred.svg" 
                 alt="Indicateur d'échec" 
