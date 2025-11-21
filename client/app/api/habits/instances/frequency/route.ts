@@ -69,12 +69,12 @@ export async function POST(request: NextRequest) {
 
       case 'weekly':
         // Créer des instances hebdomadaires pour les 12 prochaines semaines, le même jour de la semaine
-        const startDayOfWeek = start.getDay(); // 0 = dimanche, 1 = lundi, etc.
-        
         for (let i = 0; i < 12; i++) {
+          // Calculer la date de l'instance
           const instanceDate = new Date(start);
-          instanceDate.setDate(start.getDate() + (i * 7)); // Ajouter 7 jours * nombre de semaines
-          
+          instanceDate.setDate(start.getDate() + (i * 7));
+          // Normaliser à minuit locale
+          instanceDate.setHours(0, 0, 0, 0);
           const weeklyInstance = await prisma.habitInstance.create({
             data: {
               habitId,
