@@ -7,7 +7,7 @@ const createHabitSchema = z.object({
   name: z.string().min(1, 'Le nom est requis'),
   category: z.enum(['health', 'learning', 'fitness', 'work', 'lifestyle', 'creativity', 'mindfulness']),
   difficulty: z.enum(['easy', 'medium', 'hard']),
-  frequency: z.enum(['daily', 'weekly', 'custom']).default('daily'),
+  frequency: z.enum(['daily', 'weekly', 'unique', 'custom']).default('daily'),
   targetCount: z.number().min(1).default(1),
   description: z.string().optional(),
 });
