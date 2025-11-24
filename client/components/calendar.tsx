@@ -131,7 +131,7 @@ export default function Calendar({
                 onClick={() => handleDayClick(day)}
                 className={`aspect-square rounded-lg flex items-center justify-center text-sm font-medium transition-all hover:scale-105 relative ${
                   isSelected
-                    ? "bg-yellow-300/30 text-yellow-700 border border-yellow-400 shadow-[0_0_8px_2px_rgba(255,215,0,0.3)]"
+                    ? "bg-yellow-300/30 text-yellow-500 border border-yellow-400 shadow-[0_0_8px_2px_rgba(255,215,0,0.3)]"
                     : isFullyCompleted
                       ? "bg-primary/20 text-primary border border-primary"
                       : isIncompleteAndPast
