@@ -13,7 +13,7 @@ interface CreateHabitProps {
   selectedDate: Date
 }
 
-export default function CreateHabit({ onClose, onSubmit }: CreateHabitProps) {
+export default function CreateHabit({ onClose, onSubmit, selectedDate }: CreateHabitProps) {
   const [habitName, setHabitName] = useState("")
   const [description, setDescription] = useState("")
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
