@@ -64,9 +64,7 @@ export default function CreateHabit({ onClose, onSubmit, selectedDate }: CreateH
       category: selectedCategory as any,
       frequency: frequency as any,
       targetCount,
-      difficulty: difficulty as any,
-      // Ajout d'une propriété date si besoin pour le backend
-      date: normalizedDate.toISOString().split('T')[0]
+      difficulty: difficulty as any
     };
     onSubmit?.(habitData);
     onClose();
