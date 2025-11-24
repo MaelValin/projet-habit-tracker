@@ -375,6 +375,7 @@ export default function Dashboard() {
         <CreateHabit
           onClose={() => setShowCreateHabit(false)}
           onSubmit={handleCreateHabit}
+          selectedDate={selectedDate}
         />
       )}
     </main>
