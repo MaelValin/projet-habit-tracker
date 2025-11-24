@@ -43,12 +43,9 @@ export default function CreateHabit({ onClose, onSubmit, selectedDate }: CreateH
   const handleSubmit = () => {
       console.log('Date sélectionnée (avant normalisation) :', selectedDate);
     // Normaliser la date sélectionnée à 12h locale (midi) pour éviter les décalages de fuseau horaire
-    let normalizedDate;
-    if (selectedDate) {
-      normalizedDate = new Date(selectedDate);
-      normalizedDate.setHours(12, 0, 0, 0);
-      console.log('Date sélectionnée (après normalisation à 12h) :', normalizedDate);
-    }
+    const normalizedDate = new Date(selectedDate);
+    normalizedDate.setHours(12, 0, 0, 0);
+    console.log('Date sélectionnée (après normalisation à 12h) :', normalizedDate);
     setError("");
     if (!habitName.trim() || !selectedCategory) {
       return;
