@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { Habit } from '@/lib/types';
-import { Check } from 'lucide-react';
+import { Check, Heart, BookOpen, Dumbbell, Briefcase, Coffee, Palette, Brain } from 'lucide-react';
 
 
 export interface HabitCardProps {
@@ -35,6 +35,16 @@ function HabitCard({ habit, isCompleted, onComplete, canModify = true }: HabitCa
     mindfulness: 'Pleine conscience'
   }
 
+  const categoryIcons = {
+    health: <Heart className="w-4 h-4 text-red-400" />,
+    learning: <BookOpen className="w-4 h-4 text-blue-400" />,
+    fitness: <Dumbbell className="w-4 h-4 text-green-400" />,
+    work: <Briefcase className="w-4 h-4 text-yellow-400" />,
+    lifestyle: <Coffee className="w-4 h-4 text-purple-400" />,
+    creativity: <Palette className="w-4 h-4 text-pink-400" />,
+    mindfulness: <Brain className="w-4 h-4 text-cyan-400" />
+  }
+
   const difficultyColors = {
     easy: 'text-green-400',
     medium: 'text-yellow-400', 
@@ -56,7 +66,8 @@ function HabitCard({ habit, isCompleted, onComplete, canModify = true }: HabitCa
             {habit.name}
           </h3>
           <p className="flex items-center gap-2 mt-1">
-            <span className="text-xs text-muted-foreground">
+            <span className="flex items-center gap-1 text-xs text-muted-foreground">
+              {categoryIcons[habit.category]}
               {categoryLabels[habit.category]}
             </span>
             <span className={`text-xs font-semibold ${difficultyColors[habit.difficulty]}`}>
@@ -82,6 +93,7 @@ function HabitCard({ habit, isCompleted, onComplete, canModify = true }: HabitCa
       </header>
     </article>
   )
+import { Heart, BookOpen, Dumbbell, Briefcase, Coffee, Palette, Brain } from 'lucide-react';
 }
 
 export default HabitCard;
