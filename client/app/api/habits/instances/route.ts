@@ -25,8 +25,9 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const date = new Date(dateStr);
-    date.setHours(0, 0, 0, 0); // Normaliser à minuit
+    // Parse la date en local pour éviter le décalage UTC
+    const [year, month, day] = dateStr.split('-');
+    const date = new Date(Number(year), Number(month) - 1, Number(day), 0, 0, 0, 0); // minuit local
     
     console.log('API instances - Normalized date:', date.toISOString());
 
