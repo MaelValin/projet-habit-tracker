@@ -60,14 +60,15 @@ export default function CreateHabit({ onClose, onSubmit, selectedDate }: CreateH
     }
     console.log('Date sélectionnée (après normalisation à 12h) :', normalizedDate);
 
-    const habitData: CreateHabitDTO = {
-      name: habitName.trim(),
-      description: description.trim() || undefined,
-      category: selectedCategory as any,
-      frequency: frequency as any,
-      targetCount,
-      difficulty: difficulty as any
-    };
+   const habitData: CreateHabitDTO = {
+  name: habitName.trim(),
+  description: description.trim() || undefined,
+  category: selectedCategory as any,
+  frequency: frequency as any,
+  targetCount,
+  difficulty: difficulty as any,
+  startDate: normalizedDate.toISOString().split('T')[0] // <-- Ajoute cette ligne
+};
     console.log('Données de l’habitude à créer :', habitData);
     onSubmit?.(habitData);
     onClose();

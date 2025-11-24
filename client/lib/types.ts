@@ -136,6 +136,7 @@ export interface CreateHabitDTO {
   frequency: HabitFrequency;
   targetCount: number;
   difficulty: HabitDifficulty;
+  startDate: string; // Date de début pour la création d'instances
 }
 
 export interface UpdateHabitDTO extends Partial<CreateHabitDTO> {
