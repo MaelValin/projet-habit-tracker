@@ -9,13 +9,15 @@ interface CalendarProps {
   currentMonth?: Date
   onDateClick?: (date: Date) => void
   onMonthChange?: (date: Date) => void
+  selectedDate?: Date
 }
 
 export default function Calendar({ 
   calendarData = [], 
   currentMonth = new Date(),
   onDateClick,
-  onMonthChange 
+  onMonthChange,
+  selectedDate
 }: CalendarProps) {
   const [displayMonth, setDisplayMonth] = useState(currentMonth)
 
@@ -110,6 +112,7 @@ export default function Calendar({
             const dayDate = new Date(displayMonth.getFullYear(), displayMonth.getMonth(), day)
             const isPastDay = dayDate < today && !isToday
             const isIncompleteAndPast = isPastDay && hasIncompleteHabits
+            const isSelected = selectedDate && dayDate.getDate() === selectedDate.getDate() && dayDate.getMonth() === selectedDate.getMonth() && dayDate.getFullYear() === selectedDate.getFullYear()
             const formattedDate = dayDate.toLocaleDateString('fr-FR', {
               weekday: 'long',
               year: 'numeric',
@@ -127,13 +130,15 @@ export default function Calendar({
                 key={day}
                 onClick={() => handleDayClick(day)}
                 className={`aspect-square rounded-lg flex items-center justify-center text-sm font-medium transition-all hover:scale-105 relative ${
-                  isFullyCompleted
-                    ? "bg-primary/20 text-primary border border-primary"
-                    : isIncompleteAndPast
-                      ? "bg-red-500/20 text-red-400 border border-red-500/50"
-                      : isToday
-                        ? "bg-accent/20 text-accent border border-accent"
-                        : "hover:bg-muted border border-transparent"
+                  isSelected
+                    ? "bg-yellow-300/30 text-yellow-700 border border-yellow-400 shadow-[0_0_8px_2px_rgba(255,215,0,0.3)]"
+                    : isFullyCompleted
+                      ? "bg-primary/20 text-primary border border-primary"
+                      : isIncompleteAndPast
+                        ? "bg-red-500/20 text-red-400 border border-red-500/50"
+                        : isToday
+                          ? "bg-accent/20 text-accent border border-accent"
+                          : "hover:bg-muted border border-transparent"
                 }`}
                 role="gridcell"
                 aria-label={`${formattedDate}${dayData ? ` - ${dayData.totalXpEarned} XP, ${Math.round(dayData.completionRate)}% complété` : ''}`}

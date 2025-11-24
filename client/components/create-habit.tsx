@@ -54,13 +54,19 @@ export default function CreateHabit({ onClose, onSubmit, selectedDate }: CreateH
       setError("Impossible de créer une habitude sur un jour passé.");
       return;
     }
+    // Normaliser la date sélectionnée à minuit locale
+    const normalizedDate = new Date(selectedDate);
+    normalizedDate.setHours(0, 0, 0, 0);
+
     const habitData: CreateHabitDTO = {
       name: habitName.trim(),
       description: description.trim() || undefined,
       category: selectedCategory as any,
       frequency: frequency as any,
       targetCount,
-      difficulty: difficulty as any
+      difficulty: difficulty as any,
+      // Ajout d'une propriété date si besoin pour le backend
+      date: normalizedDate.toISOString().split('T')[0]
     };
     onSubmit?.(habitData);
     onClose();
