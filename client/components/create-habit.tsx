@@ -59,22 +59,6 @@ export default function CreateHabit({ onClose, onSubmit, selectedDate }: CreateH
       return;
     }
     console.log('Date sélectionnée (après normalisation à 12h) :', normalizedDate);
-    setError("");
-    if (!habitName.trim() || !selectedCategory) {
-      return;
-    }
-    // Vérifier que la date sélectionnée n'est pas dans le passé
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const selectedDay = new Date(selectedDate);
-    selectedDay.setHours(0, 0, 0, 0);
-    if (selectedDay < today) {
-      setError("Impossible de créer une habitude sur un jour passé.");
-      return;
-    }
-    // Normaliser la date sélectionnée à 12h locale (midi) pour éviter les décalages de fuseau horaire
-    const normalizedDate = new Date(selectedDate);
-    normalizedDate.setHours(12, 0, 0, 0);
 
     const habitData: CreateHabitDTO = {
       name: habitName.trim(),
