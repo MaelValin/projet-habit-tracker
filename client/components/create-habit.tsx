@@ -10,6 +10,7 @@ import { CreateHabitDTO } from "@/lib/types"
 interface CreateHabitProps {
   onClose: () => void
   onSubmit?: (habit: CreateHabitDTO) => void
+  selectedDate: Date
 }
 
 export default function CreateHabit({ onClose, onSubmit }: CreateHabitProps) {
@@ -19,6 +20,7 @@ export default function CreateHabit({ onClose, onSubmit }: CreateHabitProps) {
   const [frequency, setFrequency] = useState("daily")
   const [targetCount, setTargetCount] = useState(1)
   const [difficulty, setDifficulty] = useState("easy")
+  const [error, setError] = useState<string>("")
 
   const categories = [
     { id: "health", name: "Santé", icon: <Heart className="w-5 h-5" />, color: "text-red-400" },
@@ -39,10 +41,19 @@ export default function CreateHabit({ onClose, onSubmit }: CreateHabitProps) {
   const selectedDifficulty = difficulties.find(d => d.id === difficulty) || difficulties[0]
 
   const handleSubmit = () => {
+    setError("");
     if (!habitName.trim() || !selectedCategory) {
-      return
+      return;
     }
-
+    // Vérifier que la date sélectionnée n'est pas dans le passé
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const selectedDay = new Date(selectedDate);
+    selectedDay.setHours(0, 0, 0, 0);
+    if (selectedDay < today) {
+      setError("Impossible de créer une habitude sur un jour passé.");
+      return;
+    }
     const habitData: CreateHabitDTO = {
       name: habitName.trim(),
       description: description.trim() || undefined,
@@ -50,10 +61,9 @@ export default function CreateHabit({ onClose, onSubmit }: CreateHabitProps) {
       frequency: frequency as any,
       targetCount,
       difficulty: difficulty as any
-    }
-
-    onSubmit?.(habitData)
-    onClose()
+    };
+    onSubmit?.(habitData);
+    onClose();
   }
 
   return (
@@ -74,6 +84,12 @@ export default function CreateHabit({ onClose, onSubmit }: CreateHabitProps) {
 
         {/* Content */}
         <main className="p-6 space-y-6">
+          {/* Message d'erreur */}
+          {error && (
+            <div className="mb-2 text-sm text-red-500 text-center">
+              {error}
+            </div>
+          )}
           {/* Habit Name */}
           <div className="space-y-2">
             <Label htmlFor="habit-name">Nom de l'habitude <span className="text-red-50">*</span></Label>

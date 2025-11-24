@@ -93,7 +93,7 @@ function HabitCard({ habit, isCompleted, onComplete, canModify = true }: HabitCa
       </header>
     </article>
   )
-import { Heart, BookOpen, Dumbbell, Briefcase, Coffee, Palette, Brain } from 'lucide-react';
+
 }
 
 export default HabitCard;
