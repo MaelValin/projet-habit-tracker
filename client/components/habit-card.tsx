@@ -102,7 +102,7 @@ function HabitCard({ habit, isCompleted, onComplete, canModify = true }: HabitCa
       }`}
     >
       <header className="flex items-center justify-between">
-        <hgroup className="flex-1 flex items-center gap-2">
+        <hgroup className="flex-1">
           <h3 className={`font-medium ${localCompleted ? "line-through text-muted-foreground" : ""}`}>
             {habit.name}
           </h3>
@@ -114,6 +114,15 @@ function HabitCard({ habit, isCompleted, onComplete, canModify = true }: HabitCa
           >
             <Trash className="w-4 h-4" />
           </button>
+          <p className="flex items-center gap-2 mt-1">
+            <span className="flex items-center gap-1 text-xs text-muted-foreground">
+              {categoryIcons[habit.category]}
+              {categoryLabels[habit.category]}
+            </span>
+            <span className={`text-xs font-semibold ${difficultyColors[habit.difficulty]}`}>
+              +{habit.xpReward} XP
+            </span>
+          </p>
         </hgroup>
         <button
           onClick={handleToggle}
@@ -130,6 +139,7 @@ function HabitCard({ habit, isCompleted, onComplete, canModify = true }: HabitCa
         >
           {localCompleted && <Check className="w-4 h-4 text-white" />}
         </button>
+       
       </header>
       {/* Modale de confirmation suppression */}
       {showDeleteModal && (
@@ -153,7 +163,7 @@ function HabitCard({ habit, isCompleted, onComplete, canModify = true }: HabitCa
             <div className="flex gap-3 justify-end">
               <button
                 onClick={handleCancelDelete}
-                className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300"
+                className="px-3 py-1 rounded text-primary bg-gray-200 hover:bg-gray-300"
               >Annuler</button>
               <button
                 onClick={handleConfirmDelete}
