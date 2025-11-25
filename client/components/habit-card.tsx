@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { Habit } from '@/lib/types';
-import { Check, Heart, BookOpen, Dumbbell, Briefcase, Coffee, Palette, Brain } from 'lucide-react';
+import { Check, Heart, BookOpen, Dumbbell, Briefcase, Coffee, Palette, Brain, Trash } from 'lucide-react';
 
 
 export interface HabitCardProps {
@@ -102,20 +102,18 @@ function HabitCard({ habit, isCompleted, onComplete, canModify = true }: HabitCa
       }`}
     >
       <header className="flex items-center justify-between">
-        <hgroup className="flex-1">
+        <hgroup className="flex-1 flex items-center gap-2">
           <h3 className={`font-medium ${localCompleted ? "line-through text-muted-foreground" : ""}`}>
             {habit.name}
           </h3>
-          
-          <p className="flex items-center gap-2 mt-1">
-            <span className="flex items-center gap-1 text-xs text-muted-foreground">
-              {categoryIcons[habit.category]}
-              {categoryLabels[habit.category]}
-            </span>
-            <span className={`text-xs font-semibold ${difficultyColors[habit.difficulty]}`}>
-              +{habit.xpReward} XP
-            </span>
-          </p>
+          <button
+            onClick={handleDeleteClick}
+            className="w-6 h-6 flex items-center justify-center text-red-500 hover:text-red-700 ml-1"
+            aria-label={`Supprimer : ${habit.name}`}
+            style={{ background: 'none', border: 'none', padding: 0 }}
+          >
+            <Trash className="w-4 h-4" />
+          </button>
         </hgroup>
         <button
           onClick={handleToggle}
@@ -132,19 +130,11 @@ function HabitCard({ habit, isCompleted, onComplete, canModify = true }: HabitCa
         >
           {localCompleted && <Check className="w-4 h-4 text-white" />}
         </button>
-        {/* Bouton de suppression */}
-        <button
-          onClick={handleDeleteClick}
-          className="w-8 h-8 rounded-full border-2 flex items-center justify-center ml-2 text-red-500 border-red-300 hover:bg-red-100 transition-all"
-          aria-label={`Supprimer : ${habit.name}`}
-        >
-          &#10006;
-        </button>
       </header>
       {/* Modale de confirmation suppression */}
       {showDeleteModal && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 shadow-lg max-w-xs w-full">
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-100">
+          <div className="bg-primary rounded-lg p-6 shadow-lg max-w-xs w-full">
             <h4 className="text-lg font-semibold mb-4">Confirmer la suppression</h4>
             <p className="mb-4">Voulez-vous vraiment supprimer&nbsp;:
               <span className="font-bold"> {habit.name} </span> ?</p>
