@@ -28,19 +28,26 @@ export async function GET(request: NextRequest) {
     // Parse la date en local pour éviter le décalage UTC
     const [year, month, day] = dateStr.split('-');
     const date = new Date(Number(year), Number(month) - 1, Number(day), 0, 0, 0, 0); // minuit local
-    
+    const startOfDay = new Date(date);
+    startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = new Date(date);
+    endOfDay.setHours(23, 59, 59, 999);
+
     console.log('API instances - Normalized date:', date.toISOString());
 
     const instances = await prisma.habitInstance.findMany({
       where: {
         userId: session.user.id!,
-        date: date,
+        date: {
+          gte: startOfDay,
+          lte: endOfDay,
+        },
       },
       include: {
         habit: true,
       },
     });
-    
+
     console.log('API instances - Found instances:', instances.length);
 
     return NextResponse.json({ instances });
