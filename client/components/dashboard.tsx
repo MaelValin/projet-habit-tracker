@@ -109,6 +109,10 @@ export default function Dashboard() {
   const handleDateClick = (date: Date) => {
     setSelectedDate(date);
     loadSelectedDateInstances(date);
+    // Affiche les habitudes reçues pour la date sélectionnée
+    setTimeout(() => {
+      console.log('Habitudes reçues pour la date sélectionnée :', selectedDateInstances);
+    }, 500);
   };
 
   
