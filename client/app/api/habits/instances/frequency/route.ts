@@ -26,8 +26,8 @@ export async function POST(request: NextRequest) {
 
     const instances = [];
     const today = new Date();
-    const start = new Date(startDate + 'T12:00:00.000');
-    start.setHours(0, 0, 0, 0);
+    // Utilise la date et l'heure exacte envoyée par le frontend
+    const start = new Date(startDate);
 
     switch (frequency) {
       case 'unique':
