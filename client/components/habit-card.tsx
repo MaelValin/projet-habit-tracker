@@ -148,7 +148,7 @@ function HabitCard({ habit, isCompleted, onComplete, canModify = true }: HabitCa
       {showDeleteModal && typeof window !== 'undefined' && document.body &&
         ReactDOM.createPortal(
           <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[9999]">
-            <div className="bg-white rounded-lg p-6 shadow-lg max-w-xs w-full">
+            <div className="bg-blue-900 rounded-lg p-6 shadow-lg max-w-xs w-full">
               <h4 className="text-lg font-semibold mb-4">Confirmer la suppression</h4>
               <p className="mb-4">Voulez-vous vraiment supprimer&nbsp;:
                 <span className="font-bold"> {habit.name} </span> ?</p>
