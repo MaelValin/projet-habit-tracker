@@ -177,6 +177,10 @@ export default function Dashboard() {
   
   const createInstancesBasedOnFrequency = async (habitId: string, frequency: string) => {
     try {
+      // Crée une date avec la date sélectionnée + l'heure actuelle
+      const now = new Date();
+      const startDate = new Date(selectedDate);
+      startDate.setHours(now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds());
       const response = await fetch('/api/habits/instances/frequency', {
         method: 'POST',
         headers: {
@@ -185,7 +189,7 @@ export default function Dashboard() {
         body: JSON.stringify({
           habitId,
           frequency,
-          startDate: selectedDate.toISOString().split('T')[0], 
+          startDate: startDate.toISOString(),
         }),
       });
       

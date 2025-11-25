@@ -45,8 +45,6 @@ model Habit {
   difficulty  String   @default("easy") // 'easy', 'medium', 'hard'
   xpReward    Int      @default(10)
   isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
 
   // Relations
   userId      String
@@ -62,8 +60,6 @@ model HabitInstance {
   isCompleted Boolean  @default(false)
   completedAt DateTime?
   notes       String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
 
   // Relations
   habitId String
