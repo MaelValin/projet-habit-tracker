@@ -41,15 +41,12 @@ export default function CreateHabit({ onClose, onSubmit, selectedDate }: CreateH
   const selectedDifficulty = difficulties.find(d => d.id === difficulty) || difficulties[0]
 
   const handleSubmit = () => {
-    console.log('Date sélectionnée (avant normalisation) :', selectedDate);
+
     setError("");
-    // Déclaration unique des variables
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const selectedDay = new Date(selectedDate);
     selectedDay.setHours(0, 0, 0, 0);
-    const normalizedDate = new Date(selectedDate);
-    normalizedDate.setHours(12, 0, 0, 0);
     if (!habitName.trim() || !selectedCategory) {
       return;
     }
@@ -58,17 +55,20 @@ export default function CreateHabit({ onClose, onSubmit, selectedDate }: CreateH
       setError("Impossible de créer une habitude sur un jour passé.");
       return;
     }
-    console.log('Date sélectionnée (après normalisation à 12h) :', normalizedDate);
 
-   const habitData: CreateHabitDTO = {
-  name: habitName.trim(),
-  description: description.trim() || undefined,
-  category: selectedCategory as any,
-  frequency: frequency as any,
-  targetCount,
-  difficulty: difficulty as any,
-  startDate: normalizedDate.toISOString().split('T')[0] // <-- Ajoute cette ligne
-};
+    // Enregistre la date et l'heure exacte de création
+    const creationDate = new Date();
+    console.log('Création :', creationDate.toISOString());
+
+    const habitData: CreateHabitDTO = {
+      name: habitName.trim(),
+      description: description.trim() || undefined,
+      category: selectedCategory as any,
+      frequency: frequency as any,
+      targetCount,
+      difficulty: difficulty as any,
+      startDate: creationDate.toISOString(), // Date et heure exacte
+    };
     console.log('Données de l’habitude à créer :', habitData);
     onSubmit?.(habitData);
     onClose();
