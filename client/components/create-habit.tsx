@@ -56,8 +56,10 @@ export default function CreateHabit({ onClose, onSubmit, selectedDate }: CreateH
       return;
     }
 
-    // Enregistre la date et l'heure exacte de création
-    const creationDate = new Date();
+    // Fusionne la date sélectionnée avec l'heure actuelle
+    const now = new Date();
+    const creationDate = new Date(selectedDate);
+    creationDate.setHours(now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds());
     console.log('Création :', creationDate.toISOString());
 
     const habitData: CreateHabitDTO = {
@@ -67,7 +69,7 @@ export default function CreateHabit({ onClose, onSubmit, selectedDate }: CreateH
       frequency: frequency as any,
       targetCount,
       difficulty: difficulty as any,
-      startDate: creationDate.toISOString(), // Date et heure exacte
+      startDate: creationDate.toISOString(), // Date sélectionnée + heure actuelle
     };
     console.log('Données de l’habitude à créer :', habitData);
     onSubmit?.(habitData);
