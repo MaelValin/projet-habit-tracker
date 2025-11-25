@@ -145,38 +145,40 @@ function HabitCard({ habit, isCompleted, onComplete, canModify = true }: HabitCa
        
       </header>
       {/* Modale de confirmation suppression via Portal */}
-      {showDeleteModal && ReactDOM.createPortal(
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[9999]">
-          <div className="bg-white rounded-lg p-6 shadow-lg max-w-xs w-full">
-            <h4 className="text-lg font-semibold mb-4">Confirmer la suppression</h4>
-            <p className="mb-4">Voulez-vous vraiment supprimer&nbsp;:
-              <span className="font-bold"> {habit.name} </span> ?</p>
-            {(habit.frequency === 'daily' || habit.frequency === 'weekly') && (
-              <div className="mb-4">
-                <label className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    checked={deleteSeries}
-                    onChange={e => setDeleteSeries(e.target.checked)}
-                  />
-                  Supprimer toute la série ({habit.frequency === 'daily' ? 'quotidienne' : 'hebdomadaire'})
-                </label>
+      {showDeleteModal && typeof window !== 'undefined' && document.body &&
+        ReactDOM.createPortal(
+          <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[9999]">
+            <div className="bg-white rounded-lg p-6 shadow-lg max-w-xs w-full">
+              <h4 className="text-lg font-semibold mb-4">Confirmer la suppression</h4>
+              <p className="mb-4">Voulez-vous vraiment supprimer&nbsp;:
+                <span className="font-bold"> {habit.name} </span> ?</p>
+              {(habit.frequency === 'daily' || habit.frequency === 'weekly') && (
+                <div className="mb-4">
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={deleteSeries}
+                      onChange={e => setDeleteSeries(e.target.checked)}
+                    />
+                    Supprimer toute la série ({habit.frequency === 'daily' ? 'quotidienne' : 'hebdomadaire'})
+                  </label>
+                </div>
+              )}
+              <div className="flex gap-3 justify-end">
+                <button
+                  onClick={handleCancelDelete}
+                  className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300"
+                >Annuler</button>
+                <button
+                  onClick={handleConfirmDelete}
+                  className="px-3 py-1 rounded bg-red-500 text-white hover:bg-red-600"
+                >Supprimer</button>
               </div>
-            )}
-            <div className="flex gap-3 justify-end">
-              <button
-                onClick={handleCancelDelete}
-                className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300"
-              >Annuler</button>
-              <button
-                onClick={handleConfirmDelete}
-                className="px-3 py-1 rounded bg-red-500 text-white hover:bg-red-600"
-              >Supprimer</button>
             </div>
-          </div>
-        </div>,
-        typeof window !== 'undefined' ? document.body : undefined
-      )}
+          </div>,
+          document.body
+        )
+      }
     </article>
   )
 
