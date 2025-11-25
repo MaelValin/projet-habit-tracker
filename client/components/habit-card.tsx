@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { Habit } from '@/lib/types';
 import { Check, Heart, BookOpen, Dumbbell, Briefcase, Coffee, Palette, Brain, Trash } from 'lucide-react';
+import ReactDOM from 'react-dom';
 
 
 export interface HabitCardProps {
@@ -143,10 +144,10 @@ function HabitCard({ habit, isCompleted, onComplete, canModify = true }: HabitCa
         </button>
        
       </header>
-      {/* Modale de confirmation suppression */}
-      {showDeleteModal && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-100">
-          <div className=" rounded-lg p-6 shadow-lg max-w-xs w-full">
+      {/* Modale de confirmation suppression via Portal */}
+      {showDeleteModal && ReactDOM.createPortal(
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[9999]">
+          <div className="bg-white rounded-lg p-6 shadow-lg max-w-xs w-full">
             <h4 className="text-lg font-semibold mb-4">Confirmer la suppression</h4>
             <p className="mb-4">Voulez-vous vraiment supprimer&nbsp;:
               <span className="font-bold"> {habit.name} </span> ?</p>
@@ -165,7 +166,7 @@ function HabitCard({ habit, isCompleted, onComplete, canModify = true }: HabitCa
             <div className="flex gap-3 justify-end">
               <button
                 onClick={handleCancelDelete}
-                className="px-3 py-1 rounded text-primary bg-gray-200 hover:bg-gray-300"
+                className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300"
               >Annuler</button>
               <button
                 onClick={handleConfirmDelete}
@@ -173,7 +174,8 @@ function HabitCard({ habit, isCompleted, onComplete, canModify = true }: HabitCa
               >Supprimer</button>
             </div>
           </div>
-        </div>
+        </div>,
+        typeof window !== 'undefined' ? document.body : undefined
       )}
     </article>
   )
