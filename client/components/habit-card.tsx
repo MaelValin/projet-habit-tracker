@@ -103,6 +103,7 @@ function HabitCard({ habit, isCompleted, onComplete, canModify = true }: HabitCa
     >
       <header className="flex items-center justify-between">
         <hgroup className="flex-1">
+          <div className="flex items-center">
           <h3 className={`font-medium ${localCompleted ? "line-through text-muted-foreground" : ""}`}>
             {habit.name}
           </h3>
@@ -114,6 +115,7 @@ function HabitCard({ habit, isCompleted, onComplete, canModify = true }: HabitCa
           >
             <Trash className="w-4 h-4" />
           </button>
+          </div>
           <p className="flex items-center gap-2 mt-1">
             <span className="flex items-center gap-1 text-xs text-muted-foreground">
               {categoryIcons[habit.category]}
@@ -143,8 +145,8 @@ function HabitCard({ habit, isCompleted, onComplete, canModify = true }: HabitCa
       </header>
       {/* Modale de confirmation suppression */}
       {showDeleteModal && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-100">
-          <div className="bg-primary rounded-lg p-6 shadow-lg max-w-xs w-full">
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-100">
+          <div className=" rounded-lg p-6 shadow-lg max-w-xs w-full">
             <h4 className="text-lg font-semibold mb-4">Confirmer la suppression</h4>
             <p className="mb-4">Voulez-vous vraiment supprimer&nbsp;:
               <span className="font-bold"> {habit.name} </span> ?</p>
