@@ -63,7 +63,6 @@ export const getUserHabits = async (userId: string) => {
       userId,
       isActive: true,
     },
-    orderBy: { createdAt: 'desc' },
   });
 };
 
