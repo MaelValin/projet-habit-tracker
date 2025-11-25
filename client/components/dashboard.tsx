@@ -146,6 +146,7 @@ export default function Dashboard() {
   const totalXp = user?.totalXp || 0;
   const handleCreateHabit = async (habitData: any) => {
     try {
+      console.log('Données reçues pour création d\'habitude :', habitData);
       const response = await fetch('/api/habits', {
         method: 'POST',
         headers: {
@@ -157,13 +158,8 @@ export default function Dashboard() {
       if (response.ok) {
         const data = await response.json();
         setHabits(prev => [...prev, data.habit]);
-        
-        
         await createInstancesBasedOnFrequency(data.habit.id, habitData.frequency);
-        
         setShowCreateHabit(false);
-        
-        
         loadSelectedDateInstances(selectedDate);
         loadCalendarData();
       } else {
