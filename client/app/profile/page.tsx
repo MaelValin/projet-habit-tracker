@@ -53,7 +53,7 @@ export default function ProfilePage() {
           </div>
           
           <div className="relative">
-            <p className="text-primary font-medium text-lg glow-blue animate-pulse">
+            <p className="text-primary font-medium text-lg animate-pulse">
               Chargement du profil
               <span className="animate-bounce inline-block ml-1">.</span>
               <span className="animate-bounce inline-block ml-0.5 animation-delay-150">.</span>

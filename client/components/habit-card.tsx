@@ -7,14 +7,18 @@ import ReactDOM from 'react-dom';
 
 export interface HabitCardProps {
   habit: Habit;
-  isCompleted: boolean
-  onComplete: () => void
-  canModify?: boolean
+  isCompleted: boolean;
+  onComplete: () => void;
+  canModify?: boolean;
+  onDelete?: () => void;
 }
 
 function HabitCard({ habit, isCompleted, onComplete, canModify = true }: HabitCardProps) {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [deleteSeries, setDeleteSeries] = useState(false);
+    // Ajout de la prop onDelete
+    const props = arguments[0];
+    const onDelete = props.onDelete;
 
     const handleDeleteClick = () => {
       setShowDeleteModal(true);
@@ -37,8 +41,8 @@ function HabitCard({ habit, isCompleted, onComplete, canModify = true }: HabitCa
           });
           const data = await res.json();
           if (res.ok) {
-            // Optionnel : rafraîchir la liste ou afficher un message
             console.log('Suppression réussie :', data.message);
+            if (typeof onDelete === 'function') onDelete();
           } else {
             console.error('Erreur suppression :', data.error);
           }
@@ -147,8 +151,8 @@ function HabitCard({ habit, isCompleted, onComplete, canModify = true }: HabitCa
       {/* Modale de confirmation suppression via Portal */}
       {showDeleteModal && typeof window !== 'undefined' && document.body &&
         ReactDOM.createPortal(
-          <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[9999]">
-            <div className="bg-blue-900 rounded-lg p-6 shadow-lg max-w-xs w-full">
+          <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-9999">
+            <div className="bg-background rounded-lg p-6 shadow-lg max-w-xs w-full">
               <h4 className="text-lg font-semibold mb-4">Confirmer la suppression</h4>
               <p className="mb-4">Voulez-vous vraiment supprimer&nbsp;:
                 <span className="font-bold"> {habit.name} </span> ?</p>
@@ -167,7 +171,7 @@ function HabitCard({ habit, isCompleted, onComplete, canModify = true }: HabitCa
               <div className="flex gap-3 justify-end">
                 <button
                   onClick={handleCancelDelete}
-                  className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300"
+                  className="px-3 py-1 rounded text-muted-foreground bg-gray-200 hover:bg-gray-300"
                 >Annuler</button>
                 <button
                   onClick={handleConfirmDelete}

@@ -341,6 +341,10 @@ export default function Dashboard() {
                     isCompleted={instance?.isCompleted || false}
                     onComplete={() => isToday ? handleCompleteHabit(habit.id) : null}
                     canModify={isToday}
+                    onDelete={() => {
+                      loadHabits();
+                      loadSelectedDateInstances(selectedDate);
+                    }}
                   />
                 );
               })
@@ -348,7 +352,6 @@ export default function Dashboard() {
               <p className="text-muted-foreground">Aucune habitude créée</p>
             )
           ) : (
-            
             selectedDateInstances.length > 0 ? (
               selectedDateInstances.map((instance: any) => (
                 <HabitCard 
@@ -357,6 +360,7 @@ export default function Dashboard() {
                   isCompleted={instance.isCompleted}
                   onComplete={() => null} 
                   canModify={false}
+                  onDelete={() => loadSelectedDateInstances(selectedDate)}
                 />
               ))
             ) : (

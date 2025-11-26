@@ -111,6 +111,7 @@ export default function Calendar({
             const isToday = isCurrentMonth && day === today.getDate()
             const dayDate = new Date(displayMonth.getFullYear(), displayMonth.getMonth(), day)
             const isPastDay = dayDate < today && !isToday
+            const isFutureDay = dayDate > today
             const isIncompleteAndPast = isPastDay && hasIncompleteHabits
             const isSelected = selectedDate && dayDate.getDate() === selectedDate.getDate() && dayDate.getMonth() === selectedDate.getMonth() && dayDate.getFullYear() === selectedDate.getFullYear()
             const formattedDate = dayDate.toLocaleDateString('fr-FR', {
@@ -125,6 +126,9 @@ export default function Calendar({
               d.date.getMonth() === displayMonth.getMonth()
             )
 
+            // Ajout de la bordure pour les jours futurs avec des habitudes
+            const futureWithHabits = isFutureDay && dayData && dayData.habits.length > 0;
+
             return (
               <button
                 key={day}
@@ -138,7 +142,9 @@ export default function Calendar({
                         ? "bg-red-500/20 text-red-400 border border-red-500/50"
                         : isToday
                           ? "bg-accent/20 text-accent border border-accent"
-                          : "hover:bg-muted border border-transparent"
+                          : futureWithHabits
+                            ? "border border-primary"
+                            : "hover:bg-muted border border-transparent"
                 }`}
                 role="gridcell"
                 aria-label={`${formattedDate}${dayData ? ` - ${dayData.totalXpEarned} XP, ${Math.round(dayData.completionRate)}% complété` : ''}`}
