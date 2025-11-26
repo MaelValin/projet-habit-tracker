@@ -235,7 +235,7 @@ export default function ProfilePage() {
                 </div>
                 {penaltyCyclesTriggered > 0 && (
                   <div className="text-xs text-rose-500/60 text-center">
-                    Pénalités subies : {penaltyCyclesTriggered} × 50 XP = -{penaltyCyclesTriggered * 50} XP
+                    Pénalités subies : {penaltyCyclesTriggered} × 150 XP = -{penaltyCyclesTriggered * 150} XP
                   </div>
                 )}
               </div>
