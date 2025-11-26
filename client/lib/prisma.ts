@@ -90,20 +90,21 @@ export const toggleHabitInstance = async (
   const habit = await getHabitById(habitId);
   if (!habit) throw new Error('Habitude non trouvée');
 
-  // Normaliser la date à minuit
-  const normalizedDate = new Date(date);
-  normalizedDate.setHours(0, 0, 0, 0);
-  
-  console.log('Normalized date:', normalizedDate.toISOString());
+  // Recherche l'instance du jour (année/mois/jour) pour ce habitId
+  const startOfDay = new Date(date);
+  startOfDay.setHours(0, 0, 0, 0);
+  const endOfDay = new Date(date);
+  endOfDay.setHours(23, 59, 59, 999);
 
-  // Vérifier si l'instance existe déjà
-  const existingInstance = await prisma.habitInstance.findUnique({
+  const existingInstance = await prisma.habitInstance.findFirst({
     where: {
-      habitId_date: {
-        habitId,
-        date: normalizedDate,
+      habitId,
+      date: {
+        gte: startOfDay,
+        lte: endOfDay,
       },
     },
+    orderBy: { date: 'asc' },
   });
 
   let instance;
@@ -113,28 +114,21 @@ export const toggleHabitInstance = async (
     // Toggle l'état existant
     const newCompletedState = !existingInstance.isCompleted;
     xpChange = newCompletedState ? habit.xpReward : -habit.xpReward;
-    
     instance = await prisma.habitInstance.update({
-      where: {
-        habitId_date: {
-          habitId,
-          date: normalizedDate,
-        },
-      },
+      where: { id: existingInstance.id },
       data: {
         isCompleted: newCompletedState,
         completedAt: newCompletedState ? new Date() : null,
       },
     });
   } else {
-    // Créer une nouvelle instance complétée
+    // Créer une nouvelle instance complétée, avec l'heure courante
     xpChange = habit.xpReward;
-    
     instance = await prisma.habitInstance.create({
       data: {
         habitId,
         userId,
-        date: normalizedDate,
+        date: date,
         isCompleted: true,
         completedAt: new Date(),
       },

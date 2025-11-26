@@ -111,7 +111,6 @@ export default function Dashboard() {
     loadSelectedDateInstances(date);
     // Affiche les habitudes reçues pour la date sélectionnée
     setTimeout(() => {
-      console.log('Habitudes reçues pour la date sélectionnée :', selectedDateInstances);
     }, 500);
   };
 
@@ -150,7 +149,6 @@ export default function Dashboard() {
   const totalXp = user?.totalXp || 0;
   const handleCreateHabit = async (habitData: any) => {
     try {
-      console.log('Données reçues pour création d\'habitude :', habitData);
       const response = await fetch('/api/habits', {
         method: 'POST',
         headers: {
