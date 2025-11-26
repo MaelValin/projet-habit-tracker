@@ -153,7 +153,7 @@ export default function ProfilePage() {
           </header>
           <article className="flex flex-col justify-center items-center">
             <header>
-              <h3 className="text-center text-white/20 text-8xl font-normal font-['Inter']">TOTAL</h3>
+              <h3 className="text-center text-white/20 opacity-20 text-8xl font-normal font-['Inter']">TOTAL</h3>
             </header>
             <dl className="w-56 flex justify-center items-center gap-16 pt-4">
               <div className="w-24 flex flex-col items-center relative justify-between gap-6 h-full">

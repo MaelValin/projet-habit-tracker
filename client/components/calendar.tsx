@@ -108,10 +108,12 @@ export default function Calendar({
           {daysArray.map((day) => {
             const isFullyCompleted = fullyCompletedDays.includes(day)
             const hasIncompleteHabits = incompleteHabitDays.includes(day)
-            const isToday = isCurrentMonth && day === today.getDate()
             const dayDate = new Date(displayMonth.getFullYear(), displayMonth.getMonth(), day)
-            const isPastDay = dayDate < today && !isToday
-            const isFutureDay = dayDate > today
+            // Comparaison stricte sur l'année, le mois et le jour (ignore l'heure)
+            const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate())
+            const isToday = dayDate.getTime() === todayDate.getTime()
+            const isPastDay = dayDate < todayDate && !isToday
+            const isFutureDay = dayDate > todayDate
             const isIncompleteAndPast = isPastDay && hasIncompleteHabits
             const isSelected = selectedDate && dayDate.getDate() === selectedDate.getDate() && dayDate.getMonth() === selectedDate.getMonth() && dayDate.getFullYear() === selectedDate.getFullYear()
             const formattedDate = dayDate.toLocaleDateString('fr-FR', {
@@ -123,10 +125,11 @@ export default function Calendar({
             
             const dayData = calendarData.find(d => 
               d.date.getDate() === day && 
-              d.date.getMonth() === displayMonth.getMonth()
+              d.date.getMonth() === displayMonth.getMonth() &&
+              d.date.getFullYear() === displayMonth.getFullYear()
             )
 
-            // Ajout de la bordure pour les jours futurs avec des habitudes
+            // Tous les jours futurs qui ont des habitudes
             const futureWithHabits = isFutureDay && dayData && dayData.habits.length > 0;
 
             return (
