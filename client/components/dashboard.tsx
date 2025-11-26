@@ -328,44 +328,19 @@ export default function Dashboard() {
           {selectedDate.toDateString() === new Date().toDateString() && ' (aujourd\'hui)'}
         </h2>
         <ul className="space-y-2">
-          {selectedDate.toDateString() === new Date().toDateString() ? (
-            // Pour aujourd'hui, montrer toutes les habitudes de l'utilisateur
-            habits.length > 0 ? (
-              habits.map((habit) => {
-                const instance = selectedDateInstances.find(i => i.habitId === habit.id);
-                const isToday = selectedDate.toDateString() === new Date().toDateString();
-                return (
-                  <HabitCard 
-                    key={habit.id}
-                    habit={habit}
-                    isCompleted={instance?.isCompleted || false}
-                    onComplete={() => isToday ? handleCompleteHabit(habit.id) : null}
-                    canModify={isToday}
-                    onDelete={() => {
-                      loadHabits();
-                      loadSelectedDateInstances(selectedDate);
-                    }}
-                  />
-                );
-              })
-            ) : (
-              <p className="text-muted-foreground">Aucune habitude créée</p>
-            )
+          {selectedDateInstances.length > 0 ? (
+            selectedDateInstances.map((instance: any) => (
+              <HabitCard 
+                key={instance.id}
+                habit={instance.habit}
+                isCompleted={instance.isCompleted}
+                onComplete={() => selectedDate.toDateString() === new Date().toDateString() ? handleCompleteHabit(instance.habit.id) : null}
+                canModify={selectedDate.toDateString() === new Date().toDateString()}
+                onDelete={() => loadSelectedDateInstances(selectedDate)}
+              />
+            ))
           ) : (
-            selectedDateInstances.length > 0 ? (
-              selectedDateInstances.map((instance: any) => (
-                <HabitCard 
-                  key={instance.id}
-                  habit={instance.habit}
-                  isCompleted={instance.isCompleted}
-                  onComplete={() => null} 
-                  canModify={false}
-                  onDelete={() => loadSelectedDateInstances(selectedDate)}
-                />
-              ))
-            ) : (
-              <p className="text-muted-foreground">Aucune habitude pour ce jour</p>
-            )
+            <p className="text-muted-foreground">Aucune habitude pour ce jour</p>
           )}
         </ul>
       </section>
