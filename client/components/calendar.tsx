@@ -66,7 +66,8 @@ export default function Calendar({
   const startDay = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1 // Convertir dimanche=0 en lundi=0
 
   const daysArray = Array.from({ length: daysInMonth }, (_, i) => i + 1)
-  const today = new Date()
+  // Simulation : aujourd'hui = dernier jour du mois affiché
+  const today = new Date(displayMonth.getFullYear(), displayMonth.getMonth(), daysInMonth)
   const isCurrentMonth = displayMonth.getMonth() === today.getMonth() && 
                          displayMonth.getFullYear() === today.getFullYear()
 
@@ -134,7 +135,6 @@ export default function Calendar({
             const isFullyCompleted = fullyCompletedDays.includes(day)
             const hasIncompleteHabits = incompleteHabitDays.includes(day)
             const dayDate = new Date(displayMonth.getFullYear(), displayMonth.getMonth(), day)
-            // Comparaison stricte sur l'année, le mois et le jour (ignore l'heure)
             const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate())
             const isToday = dayDate.getTime() === todayDate.getTime()
             const isPastDay = dayDate < todayDate && !isToday
@@ -147,14 +147,11 @@ export default function Calendar({
               month: 'long',
               day: 'numeric'
             })
-            
             const dayData = calendarData.find(d => 
               d.date.getDate() === day && 
               d.date.getMonth() === displayMonth.getMonth() &&
               d.date.getFullYear() === displayMonth.getFullYear()
             )
-
-            // Tous les jours futurs qui ont des habitudes
             const futureWithHabits = isFutureDay && dayData && dayData.habits.length > 0;
 
             // Boss day: dernier jour du mois
