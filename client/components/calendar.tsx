@@ -1,6 +1,31 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import BossFightModal from "@/components/boss-fight-modal"
+
+// Ajout de la logique de combat de boss
+async function handleBossFight(playerLevel: number) {
+  const bossLevel = Math.floor(Math.random() * 5) + 1;
+  const baseChance = 0.5;
+  const levelDiff = playerLevel - bossLevel;
+  let winChance = baseChance + (levelDiff * 0.1);
+  winChance = Math.max(0.1, Math.min(0.9, winChance));
+  const roll = Math.random();
+  if (roll < winChance) {
+    try {
+      const res = await fetch('/api/boss-fight', { method: 'POST' });
+      if (res.ok) {
+        alert(`Victoire ! Tu as battu le boss de niveau ${bossLevel} et gagné 200 XP !`);
+      } else {
+        alert('Victoire, mais erreur lors de l’ajout des XP.');
+      }
+    } catch (e) {
+      alert('Erreur réseau lors de l’ajout des XP.');
+    }
+  } else {
+    alert(`Défaite... Le boss de niveau ${bossLevel} t'a vaincu. Réessaie le mois prochain !`);
+  }
+}
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { CalendarDay } from "@/lib/types"
 
@@ -20,6 +45,29 @@ export default function Calendar({
   selectedDate
 }: CalendarProps) {
   const [displayMonth, setDisplayMonth] = useState(currentMonth)
+  const [playerLevel, setPlayerLevel] = useState(1)
+  const [playerXp, setPlayerXp] = useState(0)
+  const [isBossFightModalOpen, setIsBossFightModalOpen] = useState(false)
+
+  useEffect(() => {
+    async function fetchUserLevel() {
+      try {
+        const res = await fetch('/api/user')
+        if (res.ok) {
+          const data = await res.json()
+          if (data?.user?.level) {
+            setPlayerLevel(data.user.level)
+          }
+          if (data?.user?.totalXp) {
+            setPlayerXp(data.user.totalXp)
+          }
+        }
+      } catch (e) {
+        // ignore
+      }
+    }
+    fetchUserLevel()
+  }, [])
 
   // Jours où TOUTES les habitudes sont complétées (100%) ET où il y a des habitudes
   const fullyCompletedDays = calendarData.length > 0 
@@ -41,7 +89,8 @@ export default function Calendar({
   const startDay = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1 // Convertir dimanche=0 en lundi=0
 
   const daysArray = Array.from({ length: daysInMonth }, (_, i) => i + 1)
-  const today = new Date()
+  // Simulation : aujourd'hui = dernier jour du mois affiché
+  const today = new Date(displayMonth.getFullYear(), displayMonth.getMonth(), daysInMonth)
   const isCurrentMonth = displayMonth.getMonth() === today.getMonth() && 
                          displayMonth.getFullYear() === today.getFullYear()
 
@@ -109,7 +158,6 @@ export default function Calendar({
             const isFullyCompleted = fullyCompletedDays.includes(day)
             const hasIncompleteHabits = incompleteHabitDays.includes(day)
             const dayDate = new Date(displayMonth.getFullYear(), displayMonth.getMonth(), day)
-            // Comparaison stricte sur l'année, le mois et le jour (ignore l'heure)
             const todayDate = new Date(today.getFullYear(), today.getMonth(), today.getDate())
             const isToday = dayDate.getTime() === todayDate.getTime()
             const isPastDay = dayDate < todayDate && !isToday
@@ -122,38 +170,52 @@ export default function Calendar({
               month: 'long',
               day: 'numeric'
             })
-            
             const dayData = calendarData.find(d => 
               d.date.getDate() === day && 
               d.date.getMonth() === displayMonth.getMonth() &&
               d.date.getFullYear() === displayMonth.getFullYear()
             )
-
-            // Tous les jours futurs qui ont des habitudes
             const futureWithHabits = isFutureDay && dayData && dayData.habits.length > 0;
+
+            // Boss day: dernier jour du mois
+            const isBossDay = day === daysInMonth;
+            // Boss day aujourd'hui ?
+            const isBossDayToday = isBossDay && isToday;
 
             return (
               <button
                 key={day}
-                onClick={() => handleDayClick(day)}
+                onClick={() => {
+                  if (isBossDayToday) {
+                    // Combat boss
+                    setIsBossFightModalOpen(true);
+                  } else {
+                    handleDayClick(day);
+                  }
+                }}
                 className={`aspect-square rounded-lg flex items-center justify-center text-sm font-medium transition-all hover:scale-105 relative ${
-                  isSelected
-                    ? "bg-yellow-300/30 text-yellow-500 border border-yellow-400 shadow-[0_0_8px_2px_rgba(255,215,0,0.3)]"
-                    : isFullyCompleted
-                      ? "bg-primary/20 text-primary border border-primary"
-                      : isIncompleteAndPast
-                        ? "bg-red-500/20 text-red-400 border border-red-500/50"
-                        : isToday
-                          ? "bg-accent/20 text-accent border border-accent"
-                          : futureWithHabits
-                            ? "border border-primary"
-                            : "hover:bg-muted border border-transparent"
+                  isBossDay
+                    ? "bg-orange-400/30 text-orange-700 border-2 border-orange-500 shadow-[0_0_8px_2px_rgba(255,140,0,0.3)]"
+                    : isSelected
+                      ? "bg-yellow-300/30 text-yellow-500 border border-yellow-400 shadow-[0_0_8px_2px_rgba(255,215,0,0.3)]"
+                      : isFullyCompleted
+                        ? "bg-primary/20 text-primary border border-primary"
+                        : isIncompleteAndPast
+                          ? "bg-red-500/20 text-red-400 border border-red-500/50"
+                          : isToday
+                            ? "bg-accent/20 text-accent border border-accent"
+                            : futureWithHabits
+                              ? "border border-primary"
+                              : "hover:bg-muted border border-transparent"
                 }`}
                 role="gridcell"
-                aria-label={`${formattedDate}${dayData ? ` - ${dayData.totalXpEarned} XP, ${Math.round(dayData.completionRate)}% complété` : ''}`}
-                title={dayData ? `${dayData.totalXpEarned} XP - ${Math.round(dayData.completionRate)}% complété` : undefined}
+                aria-label={`${formattedDate}${dayData ? ` - ${dayData.totalXpEarned} XP, ${Math.round(dayData.completionRate)}% complété` : ''}${isBossDay ? ' - Combat de boss' : ''}`}
+                title={isBossDay ? 'Combat de boss' : (dayData ? `${dayData.totalXpEarned} XP - ${Math.round(dayData.completionRate)}% complété` : undefined)}
               >
                 {day}
+                {isBossDay && (
+                  <span className="absolute top-0 left-0 w-2 h-2 bg-orange-500 rounded-full" aria-hidden="true" />
+                )}
                 {dayData && dayData.totalXpEarned > 0 && (
                   <span className="absolute bottom-0 right-0 w-2 h-2 bg-accent rounded-full" aria-hidden="true" />
                 )}
@@ -173,7 +235,18 @@ export default function Calendar({
           <div className="w-4 h-4 rounded bg-red-500/20 border border-red-500/50" aria-hidden="true" />
           <span className="text-muted-foreground">Jour passé non complété</span>
         </div>
+        <div className="flex items-center gap-2">
+          <div className="w-4 h-4 rounded bg-orange-400/30 border-2 border-orange-500" aria-hidden="true" />
+          <span className="text-muted-foreground">Combat de boss (dernier jour du mois)</span>
+        </div>
       </footer>
+
+      <BossFightModal
+        isOpen={isBossFightModalOpen}
+        onClose={() => setIsBossFightModalOpen(false)}
+        playerLevel={playerLevel}
+        playerXp={playerXp}
+      />
     </section>
   )
 }
