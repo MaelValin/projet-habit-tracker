@@ -11,6 +11,7 @@ interface CalendarProps {
   onDateClick?: (date: Date) => void
   onMonthChange?: (date: Date) => void
   selectedDate?: Date
+  onUserUpdate?: () => void
 }
 
 export default function Calendar({ 
@@ -18,7 +19,8 @@ export default function Calendar({
   currentMonth = new Date(),
   onDateClick,
   onMonthChange,
-  selectedDate
+  selectedDate,
+  onUserUpdate
 }: CalendarProps) {
   const [displayMonth, setDisplayMonth] = useState(currentMonth)
   const [playerLevel, setPlayerLevel] = useState(1)
@@ -36,6 +38,7 @@ export default function Calendar({
         if (data?.user?.totalXp !== undefined) {
           setPlayerXp(data.user.totalXp)
         }
+        onUserUpdate?.()
       }
     } catch (e) {
       // ignore
@@ -66,8 +69,7 @@ export default function Calendar({
   const startDay = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1 // Convertir dimanche=0 en lundi=0
 
   const daysArray = Array.from({ length: daysInMonth }, (_, i) => i + 1)
-  // Simulation : aujourd'hui = dernier jour du mois affiché
-  const today = new Date(displayMonth.getFullYear(), displayMonth.getMonth(), daysInMonth)
+  const today = new Date()
   const isCurrentMonth = displayMonth.getMonth() === today.getMonth() && 
                          displayMonth.getFullYear() === today.getFullYear()
 

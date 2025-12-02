@@ -312,6 +312,7 @@ export default function Dashboard() {
           onDateClick={handleDateClick}
           onMonthChange={(date) => loadCalendarData(date)}
           selectedDate={selectedDate}
+          onUserUpdate={loadUserData}
         />
       </section>
 
