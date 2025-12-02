@@ -170,27 +170,30 @@ export default function Calendar({
                   }
                 }}
                 className={`aspect-square rounded-lg flex items-center justify-center text-sm font-medium transition-all hover:scale-105 relative ${
-                  isBossDay
-                    ? "bg-orange-400/30 text-orange-700 border-2 border-orange-500 shadow-[0_0_8px_2px_rgba(255,140,0,0.3)]"
-                    : isSelected
-                      ? "bg-yellow-300/30 text-yellow-500 border border-yellow-400 shadow-[0_0_8px_2px_rgba(255,215,0,0.3)]"
-                      : isFullyCompleted
-                        ? "bg-primary/20 text-primary border border-primary"
-                        : isIncompleteAndPast
-                          ? "bg-red-500/20 text-red-400 border border-red-500/50"
-                          : isToday
-                            ? "bg-accent/20 text-accent border border-accent"
+                  isSelected
+                    ? "bg-yellow-300/30 text-yellow-500 border border-yellow-400 shadow-[0_0_8px_2px_rgba(255,215,0,0.3)]"
+                    : isFullyCompleted
+                      ? "bg-primary/20 text-primary border border-primary"
+                      : isIncompleteAndPast
+                        ? "bg-red-500/20 text-red-400 border border-red-500/50"
+                        : isToday
+                          ? "bg-accent/20 text-accent border border-accent"
+                          : isBossDay
+                            ? "bg-orange-400/10 text-orange-600 border border-orange-400"
                             : futureWithHabits
                               ? "border border-primary"
                             : "hover:bg-muted border border-transparent"
                 }`}
                 role="gridcell"
-                aria-label={`${formattedDate}${dayData ? ` - ${dayData.totalXpEarned} XP, ${Math.round(dayData.completionRate)}% complété` : ''}${isBossDay ? ' - Combat de boss' : ''}`}
-                title={isBossDay ? 'Combat de boss' : (dayData ? `${dayData.totalXpEarned} XP - ${Math.round(dayData.completionRate)}% complété` : undefined)}
+                aria-label={`${formattedDate}${dayData ? ` - ${dayData.totalXpEarned} XP, ${Math.round(dayData.completionRate)}% complété` : ''}${isBossDayToday ? ' - Combat de boss disponible' : isBossDay ? ' - Combat de boss (à venir)' : ''}`}
+                title={isBossDayToday ? 'Combat de boss disponible !' : isBossDay ? 'Combat de boss (dernier jour du mois)' : (dayData ? `${dayData.totalXpEarned} XP - ${Math.round(dayData.completionRate)}% complété` : undefined)}
               >
                 {day}
-                {isBossDay && (
-                  <span className="absolute top-0 left-0 w-2 h-2 bg-orange-500 rounded-full" aria-hidden="true" />
+                {isBossDayToday && (
+                  <span className="absolute top-0 left-0 w-3 h-3 bg-orange-500 rounded-full animate-pulse" aria-hidden="true" />
+                )}
+                {isBossDay && !isToday && (
+                  <span className="absolute top-0 left-0 w-2 h-2 bg-orange-400/50 rounded-full" aria-hidden="true" />
                 )}
                 {dayData && dayData.totalXpEarned > 0 && (
                   <span className="absolute bottom-0 right-0 w-2 h-2 bg-accent rounded-full" aria-hidden="true" />
