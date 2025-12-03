@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { X, Heart, BookOpen, Dumbbell, Briefcase, Coffee, Palette, Brain } from "lucide-react"
+import { X, Heart, BookOpen, Dumbbell, Briefcase, Coffee, Palette, Brain, ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -11,9 +11,10 @@ interface CreateHabitProps {
   onClose: () => void
   onSubmit?: (habit: CreateHabitDTO) => void
   selectedDate: Date
+  onDateChange?: (date: Date) => void
 }
 
-export default function CreateHabit({ onClose, onSubmit, selectedDate }: CreateHabitProps) {
+export default function CreateHabit({ onClose, onSubmit, selectedDate, onDateChange }: CreateHabitProps) {
   const [habitName, setHabitName] = useState("")
   const [description, setDescription] = useState("")
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
@@ -21,6 +22,27 @@ export default function CreateHabit({ onClose, onSubmit, selectedDate }: CreateH
   const [targetCount, setTargetCount] = useState(1)
   const [difficulty, setDifficulty] = useState("easy")
   const [error, setError] = useState<string>("")
+
+  const handlePreviousDay = () => {
+    const newDate = new Date(selectedDate)
+    newDate.setDate(newDate.getDate() - 1)
+    onDateChange?.(newDate)
+  }
+
+  const handleNextDay = () => {
+    const newDate = new Date(selectedDate)
+    newDate.setDate(newDate.getDate() + 1)
+    onDateChange?.(newDate)
+  }
+
+  const formatDate = (date: Date) => {
+    return date.toLocaleDateString('fr-FR', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    })
+  }
 
   const categories = [
     { id: "health", name: "Santé", icon: <Heart className="w-5 h-5" />, color: "text-red-400" },
@@ -80,16 +102,35 @@ export default function CreateHabit({ onClose, onSubmit, selectedDate }: CreateH
     <div className="fixed inset-0 bg-background/80 backdrop-blur-xs z-50 flex items-end sm:items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="create-habit-title">
       <form className="bg-card border border-primary/30 rounded-t-2xl sm:rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto border-animate hologram-bg">
         {/* Header */}
-        <header className="sticky top-0 bg-card border-b border-border p-4 flex items-center justify-between">
-          <h2 id="create-habit-title" className="text-xl font-bold text-glow">Nouvelle Habitude</h2>
-          <button 
-            type="button"
-            onClick={onClose} 
-            className="w-8 h-8 rounded-full hover:bg-muted flex items-center justify-center transition-all"
-            aria-label="Fermer"
-          >
-            <X className="w-5 h-5" />
-          </button>
+        <header className="sticky top-0 bg-card border-b border-border p-4">
+          <div className="flex items-center justify-between">
+            <button
+              onClick={handlePreviousDay}
+              className="w-8 h-8 rounded-full hover:bg-muted flex items-center justify-center transition-all"
+              aria-label="Jour précédent"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            <div className="text-center flex-1">
+              <h2 id="create-habit-title" className="text-xl font-bold text-glow">Nouvelle Habitude</h2>
+              <p className="text-sm text-muted-foreground mt-0.5">pour le {formatDate(selectedDate)}</p>
+            </div>
+            <button
+              onClick={handleNextDay}
+              className="w-8 h-8 rounded-full hover:bg-muted flex items-center justify-center transition-all"
+              aria-label="Jour suivant"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
+            <button 
+              type="button"
+              onClick={onClose} 
+              className="w-8 h-8 rounded-full hover:bg-muted flex items-center justify-center transition-all ml-2"
+              aria-label="Fermer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </header>
 
         {/* Content */}

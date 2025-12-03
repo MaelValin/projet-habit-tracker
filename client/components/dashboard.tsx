@@ -359,6 +359,10 @@ export default function Dashboard() {
           onClose={() => setShowCreateHabit(false)}
           onSubmit={handleCreateHabit}
           selectedDate={selectedDate}
+          onDateChange={(newDate) => {
+            setSelectedDate(newDate);
+            loadSelectedDateInstances(newDate);
+          }}
         />
       )}
     </main>
