@@ -105,6 +105,7 @@ export default function CreateHabit({ onClose, onSubmit, selectedDate, onDateCha
         <header className="sticky top-0 bg-card border-b border-border p-4">
           <div className="flex items-center justify-between">
             <button
+              type="button"
               onClick={handlePreviousDay}
               className="w-8 h-8 rounded-full hover:bg-muted flex items-center justify-center transition-all"
               aria-label="Jour précédent"
@@ -116,6 +117,7 @@ export default function CreateHabit({ onClose, onSubmit, selectedDate, onDateCha
               <p className="text-sm text-muted-foreground mt-0.5">pour le {formatDate(selectedDate)}</p>
             </div>
             <button
+              type="button"
               onClick={handleNextDay}
               className="w-8 h-8 rounded-full hover:bg-muted flex items-center justify-center transition-all"
               aria-label="Jour suivant"
