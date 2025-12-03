@@ -139,7 +139,7 @@ function HabitCard({ habit, isCompleted, onComplete, canModify = true }: HabitCa
               ? "bg-primary border-primary glow-blue check-bounce" 
               : canModify
                 ? "border-muted-foreground hover:border-primary"
-                : "border-muted-foreground/50 cursor-not-allowed"
+                : "border-muted-foreground/0 cursor-not-allowed"
           }`}
           style={{filter: 'drop-shadow(0 0 2px #3B82F6) '}} 
           aria-label={`${localCompleted ? 'Marquer comme non terminé' : 'Marquer comme terminé'} : ${habit.name}`}

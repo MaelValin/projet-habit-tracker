@@ -196,7 +196,6 @@ export default function CreateHabit({ onClose, onSubmit, selectedDate }: CreateH
                   aria-checked={difficulty === diff.id}
                 >
                   <span className="text-sm font-medium">{diff.label}</span>
-                  <span className={`text-xs font-bold ${diff.color}`}>+{diff.xp} XP</span>
                 </button>
               ))}
             </div>
