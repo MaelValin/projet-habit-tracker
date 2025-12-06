@@ -15,8 +15,6 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url);
     const dateStr = searchParams.get('date');
-    
-    console.log('API instances - Date requested:', dateStr);
 
     if (!dateStr) {
       return NextResponse.json(
@@ -33,8 +31,6 @@ export async function GET(request: NextRequest) {
     const endOfDay = new Date(date);
     endOfDay.setHours(23, 59, 59, 999);
 
-    console.log('API instances - Normalized date:', date.toISOString());
-
     const instances = await prisma.habitInstance.findMany({
       where: {
         userId: session.user.id!,
@@ -47,8 +43,6 @@ export async function GET(request: NextRequest) {
         habit: true,
       },
     });
-
-    console.log('API instances - Found instances:', instances.length);
 
     return NextResponse.json({ instances });
   } catch (error) {
@@ -72,8 +66,6 @@ export async function POST(request: NextRequest) {
     }
 
     const { habitId, date } = await request.json();
-    
-    console.log('API POST instances - Data received:', { habitId, date });
 
     if (!habitId || !date) {
       return NextResponse.json(
@@ -85,14 +77,6 @@ export async function POST(request: NextRequest) {
     const requestDate = new Date(date + 'T12:00:00.000'); // Midi local pour éviter les décalages
     // Remettre à minuit local
     requestDate.setHours(0, 0, 0, 0);
-    
-    console.log('API POST instances - Original date string:', date);
-    console.log('API POST instances - Parsed date:', requestDate.toISOString());
-    console.log('API POST instances - Local date parts:', {
-      year: requestDate.getFullYear(),
-      month: requestDate.getMonth(),
-      day: requestDate.getDate()
-    });
 
     // Créer une instance d'habitude non complétée pour cette date
     const instance = await prisma.habitInstance.create({

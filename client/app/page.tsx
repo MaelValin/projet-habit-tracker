@@ -14,7 +14,6 @@ export default async function HomePage() {
     }
   } catch (error) {
     // En cas d'erreur, aller à la page de login
-    console.log('Erreur de session, redirection vers login');
     redirect('/login');
   }
 }

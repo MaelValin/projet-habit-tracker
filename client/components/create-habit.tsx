@@ -82,7 +82,6 @@ export default function CreateHabit({ onClose, onSubmit, selectedDate, onDateCha
     const now = new Date();
     const creationDate = new Date(selectedDate);
     creationDate.setHours(now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds());
-    console.log('Création :', creationDate.toISOString());
 
     const habitData: CreateHabitDTO = {
       name: habitName.trim(),
@@ -93,7 +92,6 @@ export default function CreateHabit({ onClose, onSubmit, selectedDate, onDateCha
       difficulty: difficulty as any,
       startDate: creationDate.toISOString(), // Date sélectionnée + heure actuelle
     };
-    console.log('Données de l’habitude à créer :', habitData);
     onSubmit?.(habitData);
     onClose();
   }

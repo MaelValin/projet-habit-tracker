@@ -85,7 +85,6 @@ export const toggleHabitInstance = async (
   date: Date,
   userId: string
 ) => {
-  console.log('toggleHabitInstance called with:', { habitId, date: date.toISOString(), userId });
   
   const habit = await getHabitById(habitId);
   if (!habit) throw new Error('Habitude non trouvée');
@@ -172,7 +171,6 @@ export const toggleHabitInstance = async (
     });
   }
 
-  console.log('Instance toggled:', instance, 'XP change:', xpChange);
   return { instance, xpChange };
 };
 
@@ -181,7 +179,6 @@ export const completeHabitInstance = async (
   date: Date,
   userId: string
 ) => {
-  console.log('completeHabitInstance called with:', { habitId, date: date.toISOString(), userId });
   
   const habit = await getHabitById(habitId);
   if (!habit) throw new Error('Habitude non trouvée');
@@ -189,8 +186,6 @@ export const completeHabitInstance = async (
   // Normaliser la date à minuit
   const normalizedDate = new Date(date);
   normalizedDate.setHours(0, 0, 0, 0);
-  
-  console.log('Normalized date:', normalizedDate.toISOString());
 
   // Upsert l'instance d'habitude
   const instance = await prisma.habitInstance.upsert({
@@ -245,7 +240,6 @@ export const completeHabitInstance = async (
     },
   });
 
-  console.log('Instance created/updated:', instance);
   return instance;
 };
 

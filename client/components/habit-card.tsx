@@ -41,7 +41,6 @@ function HabitCard({ habit, isCompleted, onComplete, canModify = true }: HabitCa
           });
           const data = await res.json();
           if (res.ok) {
-            console.log('Suppression réussie :', data.message);
             if (typeof onDelete === 'function') onDelete();
           } else {
             console.error('Erreur suppression :', data.error);

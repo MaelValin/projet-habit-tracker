@@ -14,8 +14,6 @@ export async function POST(request: NextRequest) {
     }
 
     const { habitId, frequency, startDate } = await request.json();
-    
-    console.log('API frequency instances - Data received:', { habitId, frequency, startDate });
 
     if (!habitId || !frequency || !startDate) {
       return NextResponse.json(
@@ -96,8 +94,6 @@ export async function POST(request: NextRequest) {
           { status: 400 }
         );
     }
-
-    console.log(`Created ${instances.length} instances for frequency ${frequency}`);
 
     return NextResponse.json({ 
       message: `${instances.length} instances créées avec succès`,
