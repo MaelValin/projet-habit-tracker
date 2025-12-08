@@ -30,7 +30,7 @@
     "pre-commit": "^1.2.2",
     "prisma": "6.19.0",
     "react": "^19.2.0",
-    "react-dom": "16.0.7",
+    "react-dom": "19.2.1",
     "tailwind-merge": "^3.3.1",
     "tailwindcss": "^4.1.17",
     "typescript": "5.7.3",
