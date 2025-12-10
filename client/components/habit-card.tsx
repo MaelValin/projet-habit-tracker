@@ -111,14 +111,16 @@ function HabitCard({ habit, isCompleted, onComplete, canModify = true }: HabitCa
           <h3 className={`font-medium ${localCompleted ? "line-through text-muted-foreground" : ""}`}>
             {habit.name}
           </h3>
-          <button
-            onClick={handleDeleteClick}
-            className="w-6 h-6 flex items-center justify-center text-red-500 hover:text-red-700 ml-1"
-            aria-label={`Supprimer : ${habit.name}`}
-            style={{ background: 'none', border: 'none', padding: 0 }}
-          >
-            <Trash className="w-4 h-4" />
-          </button>
+          {canModify && (
+            <button
+              onClick={handleDeleteClick}
+              className="w-6 h-6 flex items-center justify-center text-red-500 hover:text-red-700 ml-1"
+              aria-label={`Supprimer : ${habit.name}`}
+              style={{ background: 'none', border: 'none', padding: 0 }}
+            >
+              <Trash className="w-4 h-4" />
+            </button>
+          )}
           </div>
           <p className="flex items-center gap-2 mt-1">
             <span className="flex items-center gap-1 text-xs text-muted-foreground">
